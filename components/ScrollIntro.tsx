@@ -47,7 +47,8 @@ export default function ScrollIntro() {
     }
   }, []);
 
-  // Draw a frame to canvas with cover-fit (desktop) / zoomed contain-fit (mobile)
+  // Draw a frame to canvas using cover-fit on every viewport — image fills the
+  // entire viewport with overflow cropped on whichever axis has the larger ratio.
   const drawFrame = useCallback((index: number) => {
     const canvas = canvasRef.current;
     const img = framesRef.current[index];
@@ -62,31 +63,18 @@ export default function ScrollIntro() {
 
     const imgRatio = img.naturalWidth / img.naturalHeight;
     const canvasRatio = cw / ch;
-    let drawW: number, drawH: number, drawX: number, drawY: number;
+    let drawW: number, drawH: number;
 
-    if (window.innerWidth > 768) {
-      // Desktop: cover-fit
-      if (canvasRatio > imgRatio) {
-        drawW = cw;
-        drawH = cw / imgRatio;
-      } else {
-        drawH = ch;
-        drawW = ch * imgRatio;
-      }
+    if (canvasRatio > imgRatio) {
+      drawW = cw;
+      drawH = cw / imgRatio;
     } else {
-      // Mobile: slightly zoomed contain-fit
-      const zoom = 1.15;
-      if (canvasRatio > imgRatio) {
-        drawH = ch * zoom;
-        drawW = drawH * imgRatio;
-      } else {
-        drawW = cw * zoom;
-        drawH = drawW / imgRatio;
-      }
+      drawH = ch;
+      drawW = ch * imgRatio;
     }
 
-    drawX = (cw - drawW) / 2;
-    drawY = (ch - drawH) / 2;
+    const drawX = (cw - drawW) / 2;
+    const drawY = (ch - drawH) / 2;
     ctx.drawImage(img, drawX, drawY, drawW, drawH);
   }, []);
 
