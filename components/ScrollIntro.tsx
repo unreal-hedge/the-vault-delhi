@@ -211,13 +211,18 @@ export default function ScrollIntro() {
       {/* Scroll-driven animation section */}
       <section
         ref={sectionRef}
-        className="relative"
-        style={{ height: "400vh" }}
+        className="relative w-full"
+        style={{ height: "400vh", maxWidth: "100vw" }}
       >
         <div
           ref={stickyRef}
-          className="sticky top-0 h-screen w-full overflow-hidden"
-          style={{ transformOrigin: "center center", willChange: "transform" }}
+          className="sticky top-0 w-full overflow-hidden"
+          style={{
+            height: "100dvh",
+            maxWidth: "100vw",
+            transformOrigin: "center center",
+            willChange: "transform",
+          }}
         >
           <canvas ref={canvasRef} className="absolute inset-0" />
 

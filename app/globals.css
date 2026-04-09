@@ -15,10 +15,15 @@
 
 html {
   /* scroll-behavior: smooth removed — interferes with scroll-driven frame animation */
+  /* clip horizontal overflow so transforms/animations can't widen the document */
+  overflow-x: clip;
 }
 
 body {
   @apply bg-black text-card-white font-body antialiased;
+  overflow-x: clip;
+  /* keep touch scrolling purely vertical so the scroll-driven intro doesn't stutter */
+  overscroll-behavior-x: none;
 }
 
 @layer utilities {
