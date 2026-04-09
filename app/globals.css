@@ -1,0 +1,91 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --black: #050505;
+  --deep-green: #0a1a12;
+  --gold: #c9a84c;
+  --gold-light: #e8c878;
+  --card-white: #f5f0e8;
+  --smoke: #1a1a1a;
+  --border: #2a2a2a;
+  --red-chip: #8b1a1a;
+}
+
+html {
+  /* scroll-behavior: smooth removed — interferes with scroll-driven frame animation */
+}
+
+body {
+  @apply bg-black text-card-white font-body antialiased;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .link-gold-underline {
+    @apply relative inline-block;
+  }
+
+  .link-gold-underline::after {
+    content: "";
+    @apply absolute bottom-0 left-0 h-[2px] w-full origin-left scale-x-0 bg-gold transition-transform duration-300;
+  }
+
+  .link-gold-underline:hover::after {
+    @apply scale-x-100;
+  }
+}
+
+.hero-particles {
+  pointer-events: none;
+}
+
+.hero-particle {
+  position: absolute;
+  border-radius: 9999px;
+  background: radial-gradient(circle at 30% 30%, var(--gold-light), var(--gold));
+  opacity: 0.45;
+  animation: particleDrift linear infinite;
+  box-shadow: 0 0 12px rgba(201, 168, 76, 0.25);
+}
+
+@keyframes particleDrift {
+  0% {
+    transform: translateY(100vh) translateX(0) scale(1);
+    opacity: 0;
+  }
+  8% {
+    opacity: 0.55;
+  }
+  100% {
+    transform: translateY(-120px) translateX(var(--drift-x, 20px)) scale(0.85);
+    opacity: 0;
+  }
+}
+
+.suit-float {
+  animation: suitDrift linear infinite;
+}
+
+@keyframes suitDrift {
+  0% {
+    transform: translateY(110%) rotate(0deg);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateY(-20%) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+input:focus,
+textarea:focus {
+  outline: none;
+}
