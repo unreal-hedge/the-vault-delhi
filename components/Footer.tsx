@@ -7,6 +7,7 @@ const nav = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About" },
   { href: "/games", label: "Games" },
+  { href: "/menu", label: "Menu" },
   { href: "/#cash-festival", label: "Cash Festival" },
   { href: "/careers", label: "Careers" },
   { href: "/franchise", label: "Franchise" },
