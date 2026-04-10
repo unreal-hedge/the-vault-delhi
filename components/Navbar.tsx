@@ -49,7 +49,7 @@ function MobileMenu({ open, onClose, pathname }: { open: boolean; onClose: () =>
           >
             <div className="flex items-center justify-between border-b border-[#050505]/10 px-6 py-4">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo-transparent.png?v=3" alt="The Vault" style={{ height: "28px", width: "auto", objectFit: "contain", filter: "brightness(0.15)" }} />
+              <img src="/logo-transparent.png?v=4" alt="The Vault" style={{ height: "28px", width: "auto", objectFit: "contain", filter: "brightness(0.15)" }} />
               <button
                 type="button"
                 className="rounded-md p-1.5 text-[#050505]/70 transition-colors hover:text-[#050505]"
@@ -138,16 +138,16 @@ export function Navbar() {
           <Link href="/" className="flex shrink-0 items-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/logo-transparent.png?v=3"
+              src="/logo-transparent.png?v=4"
               alt="The Vault"
               style={{
-                height: "52px",
+                height: "60px",
                 width: "auto",
                 objectFit: "contain",
                 opacity: scrolled || !isHome ? 1 : 0,
                 transition: "opacity 400ms ease",
               }}
-              className="md:h-14"
+              className="md:h-16"
             />
           </Link>
 
