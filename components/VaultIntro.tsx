@@ -163,7 +163,7 @@ export default function VaultIntro({ onComplete }: { onComplete: () => void }) {
           {!playing && (
             <div className="absolute inset-0 z-[5] flex flex-col items-center justify-center bg-[#050505]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo-transparent.png" alt="The Vault" style={{ width: "120px", height: "auto", objectFit: "contain", marginBottom: "24px" }} />
+              <img src="/logo-transparent.png?v=3" alt="The Vault" style={{ width: "120px", height: "auto", objectFit: "contain", marginBottom: "24px" }} />
               <motion.div
                 className="h-8 w-8 rounded-full border-2 border-[#C9A84C] border-t-transparent"
                 animate={{ rotate: 360 }}

@@ -67,7 +67,7 @@ export default function AboutPage() {
             <div className="overflow-hidden border border-border bg-black/40">
               <div className="relative flex aspect-[4/5] w-full items-center justify-center bg-deep-green p-10">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/logo-transparent.png" alt="The Vault" style={{ maxWidth: "200px", width: "60%", height: "auto", objectFit: "contain" }} />
+                <img src="/logo-transparent.png?v=3" alt="The Vault" style={{ maxWidth: "200px", width: "60%", height: "auto", objectFit: "contain" }} />
               </div>
               <div className="p-6">
                 <p className="font-bebas text-2xl text-gold">Yash Wadhwa</p>

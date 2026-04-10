@@ -183,7 +183,7 @@ export default function ScrollIntro() {
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/logo-transparent.png"
+              src="/logo-transparent.png?v=3"
               alt="The Vault"
               style={{
                 width: "120px",

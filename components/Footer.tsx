@@ -23,7 +23,7 @@ export function Footer() {
         <div className="grid gap-12 lg:grid-cols-4 lg:items-start">
           <div className="lg:col-span-2">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo-transparent.png" alt="The Vault" style={{ height: "48px", width: "auto", objectFit: "contain" }} />
+            <img src="/logo-transparent.png?v=3" alt="The Vault" style={{ height: "48px", width: "auto", objectFit: "contain" }} />
             <p className="mt-3 max-w-sm font-body text-sm leading-relaxed text-card-white/55">
               Delhi NCR&apos;s first legal poker venue. Open 24/7 at Paras One33 Mall, Ghaziabad — built for players who take the game seriously.
             </p>

@@ -49,7 +49,7 @@ function MobileMenu({ open, onClose, pathname }: { open: boolean; onClose: () =>
           >
             <div className="flex items-center justify-between border-b border-[#050505]/10 px-6 py-4">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo-transparent.png" alt="The Vault" style={{ height: "28px", width: "auto", objectFit: "contain", filter: "brightness(0.15)" }} />
+              <img src="/logo-transparent.png?v=3" alt="The Vault" style={{ height: "28px", width: "auto", objectFit: "contain", filter: "brightness(0.15)" }} />
               <button
                 type="button"
                 className="rounded-md p-1.5 text-[#050505]/70 transition-colors hover:text-[#050505]"
@@ -138,7 +138,7 @@ export function Navbar() {
           <Link href="/" className="flex shrink-0 items-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/logo-transparent.png"
+              src="/logo-transparent.png?v=3"
               alt="The Vault"
               // Hidden while the home hero/scroll-intro is playing (transparent
               // navbar state) — fades in together with the solid header bar
