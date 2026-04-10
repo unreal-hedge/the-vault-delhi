@@ -6,6 +6,23 @@ import { ChevronDown } from "lucide-react";
 
 const TOTAL_FRAMES = 192;
 
+const LOADING_MESSAGES = [
+  "Downloading security systems...",
+  "Shuffling the deck...",
+  "Setting up the tables...",
+  "Checking the vault door...",
+  "Warming up the felt...",
+  "Counting the chips...",
+  "Calibrating the card shuffler...",
+  "Polishing the poker chips...",
+  "Scanning for marked cards...",
+  "Preparing your seat...",
+  "Activating surveillance...",
+  "Loading the kitchen menu...",
+  "Briefing the dealers...",
+  "Locking down the vault...",
+];
+
 function getFrameSrc(i: number) {
   return `/intro-frames/frame_${String(i).padStart(4, "0")}.jpg`;
 }
@@ -21,6 +38,16 @@ export default function ScrollIntro() {
   const tickingRef = useRef(false);
   const [loaded, setLoaded] = useState(false);
   const [loadProgress, setLoadProgress] = useState(0);
+  const [msgIndex, setMsgIndex] = useState(0);
+
+  // Cycle through loading messages
+  useEffect(() => {
+    if (loaded) return;
+    const interval = setInterval(() => {
+      setMsgIndex((prev) => (prev + 1) % LOADING_MESSAGES.length);
+    }, 2200);
+    return () => clearInterval(interval);
+  }, [loaded]);
 
   // Zoom transition config
   const ZOOM_START = 0.75; // progress at which zoom begins
@@ -203,12 +230,19 @@ export default function ScrollIntro() {
                 style={{ width: `${loadProgress * 100}%` }}
               />
             </div>
-            <p
-              className="mt-4 text-xs tracking-[0.3em] text-gold/70"
-              style={{ fontFamily: "var(--font-cinzel), serif" }}
-            >
-              LOADING
-            </p>
+            <AnimatePresence mode="wait">
+              <motion.p
+                key={msgIndex}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.3 }}
+                className="mt-4 text-xs tracking-[0.15em] text-gold/70"
+                style={{ fontFamily: "var(--font-cinzel), serif" }}
+              >
+                {LOADING_MESSAGES[msgIndex]}
+              </motion.p>
+            </AnimatePresence>
           </motion.div>
         )}
       </AnimatePresence>
