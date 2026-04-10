@@ -134,24 +134,20 @@ export function Navbar() {
             : "bg-transparent"
         )}
       >
-        <nav className="mx-auto flex max-w-7xl items-center justify-between px-5 py-3 md:py-4 md:px-8">
+        <nav className="mx-auto flex max-w-7xl items-center justify-between px-5 py-1 md:py-1.5 md:px-8">
           <Link href="/" className="flex shrink-0 items-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/logo-transparent.png?v=3"
               alt="The Vault"
-              // Hidden while the home hero/scroll-intro is playing (transparent
-              // navbar state) — fades in together with the solid header bar
-              // once the user scrolls past 100px. On non-home routes it's
-              // always visible.
               style={{
-                height: "44px",
+                height: "52px",
                 width: "auto",
                 objectFit: "contain",
                 opacity: scrolled || !isHome ? 1 : 0,
                 transition: "opacity 400ms ease",
               }}
-              className="md:h-12"
+              className="md:h-14"
             />
           </Link>
 
