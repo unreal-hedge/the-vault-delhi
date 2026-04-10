@@ -43,7 +43,7 @@ export default function AboutPage() {
             The Vault was built to change that. Founded in 2024 by{" "}
             <span className="text-card-white">Yash Wadhwa</span>, we are Delhi
             NCR&apos;s first fully legal, purpose-built poker room — operating
-            24 hours a day from RDC Raj Nagar, Ghaziabad. Six professional
+            24 hours a day from Paras One33 Mall, 1st Floor. Six professional
             tables. Three games. World-class dealers. And a standard of luxury
             this region has never seen at a card table.
           </p>

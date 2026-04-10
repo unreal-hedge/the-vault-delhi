@@ -72,20 +72,20 @@ export default function Home() {
             <div className="mt-12 grid gap-12 lg:grid-cols-2">
               <div className="relative min-h-[280px] overflow-hidden border border-border bg-smoke">
                 <iframe
-                  src="https://www.google.com/maps?q=RDC+Raj+Nagar+Ghaziabad+Uttar+Pradesh+201002&output=embed"
+                  src="https://www.google.com/maps?q=Paras+One33+Mall+Ghaziabad+Uttar+Pradesh&output=embed"
                   width="100%"
                   height="100%"
                   style={{ border: 0, position: "absolute", inset: 0 }}
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
-                  title="The Vault — RDC Raj Nagar, Ghaziabad"
+                  title="The Vault — Paras One33 Mall, Ghaziabad"
                 />
               </div>
               <div>
                 <p className="font-body text-sm leading-relaxed text-card-white/75">
                   <span className="text-gold">Address</span>
                   <br />
-                  RDC Raj Nagar, Ghaziabad, Uttar Pradesh 201002
+                  Paras One33 Mall, 1st Floor, Ghaziabad, Uttar Pradesh
                 </p>
                 <p className="mt-4 font-body text-sm leading-relaxed text-card-white/75">
                   <span className="text-gold">Hours</span>
@@ -94,7 +94,7 @@ export default function Home() {
                 </p>
                 <div className="mt-8 flex flex-wrap gap-4">
                   <a
-                    href="https://wa.me/918882211221"
+                    href="https://wa.me/918796049859"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 rounded-sm bg-[#25D366] px-5 py-3 font-body text-sm font-semibold text-white transition-opacity hover:opacity-90"

@@ -13,7 +13,7 @@ const amenities: Amenity[] = [
   { icon: Shield, title: "Fully Legal & Secure", description: "Operating under proper licensing in Ghaziabad, with monitored premises, professional security, and complete peace of mind." },
   { icon: Car, title: "Complimentary Valet Parking", description: "Pull up anytime. Our valet team takes care of your vehicle so you can walk straight to the table." },
   { icon: Wind, title: "Dedicated Smoking Lounge", description: "A private, well-ventilated lounge for guests who like a cigar or cigarette between hands." },
-  { icon: UtensilsCrossed, title: "Gourmet Dining — On Us", description: "Full kitchen, full bar, and it's all complimentary for our players. Stay focused on the game — we'll handle the rest." },
+  { icon: UtensilsCrossed, title: "Gourmet Dining — On Us", description: "Full kitchen, and it's all complimentary for our players. Stay focused on the game — we'll handle the rest." },
 ];
 
 export function HomeAmenities() {

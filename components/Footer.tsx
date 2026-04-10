@@ -25,7 +25,7 @@ export function Footer() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/logo-transparent.png" alt="The Vault" style={{ height: "48px", width: "auto", objectFit: "contain" }} />
             <p className="mt-3 max-w-sm font-body text-sm leading-relaxed text-card-white/55">
-              Delhi NCR&apos;s first legal poker venue. Open 24/7 in Ghaziabad — built for players who take the game seriously.
+              Delhi NCR&apos;s first legal poker venue. Open 24/7 at Paras One33 Mall, Ghaziabad — built for players who take the game seriously.
             </p>
             <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-border bg-smoke px-4 py-2">
               <span className="h-2 w-2 animate-pulse-live rounded-full bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.8)]" aria-hidden />
@@ -55,13 +55,13 @@ export function Footer() {
               <p>
                 The Vault
                 <br />
-                RDC Raj Nagar
+                Paras One33 Mall, 1st Floor
                 <br />
-                Ghaziabad, UP 201002
+                Ghaziabad, Uttar Pradesh
               </p>
               <p>
-                <a href="https://wa.me/918882211221" className="text-gold hover:underline">
-                  +91 88822 11221
+                <a href="https://wa.me/918796049859" className="text-gold hover:underline">
+                  +91 87960 49859
                 </a>
               </p>
               <p>

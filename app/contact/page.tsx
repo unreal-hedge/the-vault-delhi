@@ -25,7 +25,7 @@ const faqs = [
   },
   {
     q: "Do you serve food and drinks?",
-    a: "Yes, and it is all complimentary. Our full kitchen and bar are on the house for our players — gourmet dining, served right to your seat, so you never have to leave the table.",
+    a: "Yes, and it is all complimentary. Our full kitchen is on the house for our players — gourmet dining, served right to your seat, so you never have to leave the table.",
   },
   {
     q: "Is parking available?",
@@ -47,7 +47,7 @@ export default function ContactPage() {
           Ready to Play?
         </h1>
         <p className="mt-4 max-w-xl font-body text-lg text-card-white/55">
-          Open 24/7 in RDC Raj Nagar, Ghaziabad. Walk in any time — or message us first.
+          Open 24/7 at Paras One33 Mall, Ghaziabad. Walk in any time — or message us first.
         </p>
       </section>
 
@@ -71,9 +71,9 @@ export default function ContactPage() {
               <p className="mt-2 font-body text-card-white/80">
                 The Vault
                 <br />
-                RDC Raj Nagar, Ghaziabad
+                Paras One33 Mall, 1st Floor
                 <br />
-                Uttar Pradesh 201002
+                Ghaziabad, Uttar Pradesh
               </p>
             </div>
             <div>
@@ -81,10 +81,10 @@ export default function ContactPage() {
                 WhatsApp
               </h3>
               <a
-                href="https://wa.me/918882211221"
+                href="https://wa.me/918796049859"
                 className="mt-2 inline-block font-body text-gold hover:underline"
               >
-                +91 88822 11221
+                +91 87960 49859
               </a>
             </div>
             <div>
@@ -132,13 +132,13 @@ export default function ContactPage() {
             <div className="overflow-hidden border border-border">
               <div className="relative min-h-[260px]">
                 <iframe
-                  src="https://www.google.com/maps?q=RDC+Raj+Nagar+Ghaziabad+Uttar+Pradesh+201002&output=embed"
+                  src="https://www.google.com/maps?q=Paras+One33+Mall+Ghaziabad+Uttar+Pradesh&output=embed"
                   width="100%"
                   height="100%"
                   style={{ border: 0, position: "absolute", inset: 0 }}
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
-                  title="The Vault — RDC Raj Nagar, Ghaziabad"
+                  title="The Vault — Paras One33 Mall, Ghaziabad"
                 />
               </div>
             </div>
@@ -148,10 +148,10 @@ export default function ContactPage() {
                 Coming Soon
               </p>
               <p className="mt-3 font-bebas text-2xl text-card-white">
-                The Vault, Goa
+                The Vault — Gurgaon · Ghaziabad · Goa
               </p>
               <p className="mt-2 font-body text-sm leading-relaxed text-card-white/65">
-                A second location, opening 2026. Message us to join the early access list.
+                New locations opening soon. Message us to join the early access list.
               </p>
             </div>
           </aside>

@@ -31,16 +31,16 @@ export function GoaBanner() {
                   </span>
                 </div>
                 <h2 className="mt-6 font-display text-4xl leading-[1.05] text-card-white md:text-6xl">
-                  The Vault, <span className="text-gold">Goa.</span>
+                  The Vault is <span className="text-gold">expanding.</span>
                 </h2>
                 <p className="mt-6 font-body text-base leading-relaxed text-card-white/70 md:text-lg">
-                  India&apos;s favourite destination for poker is about to get
-                  a new home. We&apos;re bringing The Vault standard — 24/7
+                  We&apos;re bringing The Vault standard — 24/7
                   professional play, gourmet hospitality, and effortless luxury
-                  — to the shores of Goa.
+                  — to new cities. The Vault Gurgaon, The Vault Ghaziabad,
+                  and The Vault Goa are all on the way.
                 </p>
                 <p className="mt-4 font-body text-sm uppercase tracking-[0.25em] text-gold/80">
-                  Opening 2026
+                  Opening Soon
                 </p>
               </div>
 
@@ -48,11 +48,11 @@ export function GoaBanner() {
                 <div className="flex items-center gap-2 text-card-white/55">
                   <MapPin className="h-4 w-4 text-gold" />
                   <span className="font-body text-xs uppercase tracking-widest">
-                    Goa, India
+                    Gurgaon · Ghaziabad · Goa
                   </span>
                 </div>
                 <p className="max-w-xs font-body text-sm text-card-white/55 lg:text-right">
-                  Be the first to know when our Goa room opens its doors.
+                  Be the first to know when our new rooms open their doors.
                 </p>
                 <button
                   onClick={() => window.dispatchEvent(new Event("openWaitlist"))}

@@ -49,7 +49,7 @@ function MobileMenu({ open, onClose, pathname }: { open: boolean; onClose: () =>
           >
             <div className="flex items-center justify-between border-b border-[#050505]/10 px-6 py-4">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo.png?v=2" alt="The Vault" style={{ height: "28px", width: "auto", objectFit: "contain" }} />
+              <img src="/logo-transparent.png" alt="The Vault" style={{ height: "28px", width: "auto", objectFit: "contain", filter: "brightness(0.15)" }} />
               <button
                 type="button"
                 className="rounded-md p-1.5 text-[#050505]/70 transition-colors hover:text-[#050505]"
