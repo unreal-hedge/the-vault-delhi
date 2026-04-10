@@ -26,7 +26,7 @@ export function Footer() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/logo-transparent.png?v=3" alt="The Vault" style={{ height: "48px", width: "auto", objectFit: "contain" }} />
             <p className="mt-3 max-w-sm font-body text-sm leading-relaxed text-card-white/55">
-              Delhi NCR&apos;s first legal poker venue. Open 24/7 at Paras One33 Mall, Ghaziabad — built for players who take the game seriously.
+              Delhi NCR&apos;s first legal poker venue. Open 24/7 at Paras One33 Mall, Noida — built for players who take the game seriously.
             </p>
             <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-border bg-smoke px-4 py-2">
               <span className="h-2 w-2 animate-pulse-live rounded-full bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.8)]" aria-hidden />
@@ -58,7 +58,7 @@ export function Footer() {
                 <br />
                 Paras One33 Mall, 1st Floor
                 <br />
-                Ghaziabad, Uttar Pradesh
+                Noida, Uttar Pradesh
               </p>
               <p>
                 <a href="https://wa.me/918796049859" className="text-gold hover:underline">
@@ -96,7 +96,7 @@ export function Footer() {
 
         <div className="mt-14 border-t border-border pt-8 text-center">
           <p className="font-body text-xs text-card-white/40">
-            The Vault operates as a fully legal, licensed poker venue in Ghaziabad, Uttar Pradesh. Entry restricted to 18+. Please play responsibly.
+            The Vault operates as a fully legal, licensed poker venue in Noida, Uttar Pradesh. Entry restricted to 18+. Please play responsibly.
           </p>
           <p className="mt-3 font-body text-xs text-card-white/35">
             © {new Date().getFullYear()} The Vault Poker Room. All rights reserved.

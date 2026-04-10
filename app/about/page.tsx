@@ -85,7 +85,7 @@ export default function AboutPage() {
           </ScrollAnimation>
           <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {[
-              { title: "Legality", body: "Fully licensed and operating within the law in Ghaziabad. No grey areas — just poker, played properly." },
+              { title: "Legality", body: "Fully licensed and operating within the law in Noida. No grey areas — just poker, played properly." },
               { title: "Security", body: "Monitored premises, professional security, complimentary valet, and a private setting where every guest plays with confidence." },
               { title: "Excellence", body: "Six tournament-grade tables, world-class dealers, and gourmet hospitality that meets the standard our players deserve." },
               { title: "Community", body: "A room built around respect — for the game, for the dealers, and for every player who walks through our doors." },

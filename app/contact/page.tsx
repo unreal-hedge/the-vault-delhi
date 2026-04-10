@@ -9,7 +9,7 @@ import { motion, AnimatePresence } from "framer-motion";
 const faqs = [
   {
     q: "Is The Vault legal?",
-    a: "Yes — completely. The Vault operates as a fully licensed, legal poker room in Ghaziabad, Uttar Pradesh. We comply with all applicable regulations and operate transparently.",
+    a: "Yes — completely. The Vault operates as a fully licensed, legal poker room in Noida, Uttar Pradesh. We comply with all applicable regulations and operate transparently.",
   },
   {
     q: "What are your hours?",
@@ -47,7 +47,7 @@ export default function ContactPage() {
           Ready to Play?
         </h1>
         <p className="mt-4 max-w-xl font-body text-lg text-card-white/55">
-          Open 24/7 at Paras One33 Mall, Ghaziabad. Walk in any time — or message us first.
+          Open 24/7 at Paras One33 Mall, Noida. Walk in any time — or message us first.
         </p>
       </section>
 
@@ -73,7 +73,7 @@ export default function ContactPage() {
                 <br />
                 Paras One33 Mall, 1st Floor
                 <br />
-                Ghaziabad, Uttar Pradesh
+                Noida, Uttar Pradesh
               </p>
             </div>
             <div>
@@ -132,13 +132,13 @@ export default function ContactPage() {
             <div className="overflow-hidden border border-border">
               <div className="relative min-h-[260px]">
                 <iframe
-                  src="https://www.google.com/maps?q=Paras+One33+Mall+Ghaziabad+Uttar+Pradesh&output=embed"
+                  src="https://www.google.com/maps?q=Paras+One33,+Noida,+Uttar+Pradesh&output=embed"
                   width="100%"
                   height="100%"
                   style={{ border: 0, position: "absolute", inset: 0 }}
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
-                  title="The Vault — Paras One33 Mall, Ghaziabad"
+                  title="The Vault — Paras One33 Mall, Noida"
                 />
               </div>
             </div>
@@ -148,7 +148,7 @@ export default function ContactPage() {
                 Coming Soon
               </p>
               <p className="mt-3 font-bebas text-2xl text-card-white">
-                The Vault — Gurgaon · Ghaziabad · Goa
+                The Vault — Gurgaon · Noida · Goa
               </p>
               <p className="mt-2 font-body text-sm leading-relaxed text-card-white/65">
                 New locations opening soon. Message us to join the early access list.

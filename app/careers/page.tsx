@@ -72,7 +72,7 @@ export default function CareersPage() {
             Open Positions
           </h2>
           <p className="mt-3 max-w-2xl font-body text-card-white/55">
-            All roles are based at our Ghaziabad room. Goa team postings to
+            All roles are based at our Noida room. Goa team postings to
             follow as we approach our 2026 launch.
           </p>
         </ScrollAnimation>

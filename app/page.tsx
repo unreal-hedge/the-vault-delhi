@@ -48,7 +48,7 @@ export default function Home() {
                 The Vault is the region&apos;s first fully legal, purpose-built poker
                 venue — six professional tables, world-class dealers, gourmet hospitality,
                 and a standard of luxury Delhi NCR has never seen. Open 24/7, in
-                Ghaziabad. Built for players who take the game seriously.
+                Noida. Built for players who take the game seriously.
               </p>
               <Link
                 href="/contact"
@@ -72,20 +72,20 @@ export default function Home() {
             <div className="mt-12 grid gap-12 lg:grid-cols-2">
               <div className="relative min-h-[280px] overflow-hidden border border-border bg-smoke">
                 <iframe
-                  src="https://www.google.com/maps?q=Paras+One33+Mall+Ghaziabad+Uttar+Pradesh&output=embed"
+                  src="https://www.google.com/maps?q=Paras+One33,+Noida,+Uttar+Pradesh&output=embed"
                   width="100%"
                   height="100%"
                   style={{ border: 0, position: "absolute", inset: 0 }}
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
-                  title="The Vault — Paras One33 Mall, Ghaziabad"
+                  title="The Vault — Paras One33 Mall, Noida"
                 />
               </div>
               <div>
                 <p className="font-body text-sm leading-relaxed text-card-white/75">
                   <span className="text-gold">Address</span>
                   <br />
-                  Paras One33 Mall, 1st Floor, Ghaziabad, Uttar Pradesh
+                  Paras One33 Mall, 1st Floor, Noida, Uttar Pradesh
                 </p>
                 <p className="mt-4 font-body text-sm leading-relaxed text-card-white/75">
                   <span className="text-gold">Hours</span>
