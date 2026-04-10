@@ -5,7 +5,7 @@ const TOTAL_PAGES = 11;
 export default function MenuPage() {
   return (
     <div className="bg-black">
-      <section className="relative -mt-14 flex min-h-[30vh] flex-col justify-center bg-gradient-to-b from-deep-green to-black px-5 py-24 pt-28 md:px-8">
+      <section className="relative -mt-14 flex min-h-[30vh] flex-col justify-center bg-gradient-to-b from-deep-green to-black px-5 py-24 pt-36 md:px-8">
         <h1 className="font-display text-4xl text-card-white md:text-6xl lg:text-7xl">
           Food Menu
         </h1>
