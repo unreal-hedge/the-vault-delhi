@@ -27,10 +27,12 @@ export default function ScrollIntro() {
   const ZOOM_MAX_SCALE = 3.5; // how far it zooms in
   const FADE_START = 0.8; // progress at which fade-out begins
 
-  // Preload all frames
+  // Preload frames — show the site after the first 25% are ready,
+  // continue loading the rest in the background.
   useEffect(() => {
     let loadedCount = 0;
     const imgs: HTMLImageElement[] = [];
+    const EARLY_THRESHOLD = Math.ceil(TOTAL_FRAMES * 0.25);
 
     for (let i = 1; i <= TOTAL_FRAMES; i++) {
       const img = new Image();
@@ -38,9 +40,12 @@ export default function ScrollIntro() {
       img.onload = img.onerror = () => {
         loadedCount++;
         setLoadProgress(loadedCount / TOTAL_FRAMES);
-        if (loadedCount >= TOTAL_FRAMES) {
+        if (loadedCount >= EARLY_THRESHOLD && !framesRef.current.length) {
           framesRef.current = imgs;
           setLoaded(true);
+        }
+        if (loadedCount >= TOTAL_FRAMES) {
+          framesRef.current = imgs;
         }
       };
       imgs.push(img);
