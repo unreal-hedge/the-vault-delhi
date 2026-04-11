@@ -148,7 +148,7 @@ export default function ContactPage() {
                 Coming Soon
               </p>
               <p className="mt-3 font-bebas text-2xl text-card-white">
-                The Vault — Gurgaon · Noida · Goa
+                The Vault — Gurgaon · Ghaziabad · Goa
               </p>
               <p className="mt-2 font-body text-sm leading-relaxed text-card-white/65">
                 New locations opening soon. Message us to join the early access list.

@@ -36,7 +36,7 @@ export function GoaBanner() {
                 <p className="mt-6 font-body text-base leading-relaxed text-card-white/70 md:text-lg">
                   We&apos;re bringing The Vault standard — 24/7
                   professional play, gourmet hospitality, and effortless luxury
-                  — to new cities. The Vault Gurgaon, The Vault Noida,
+                  — to new cities. The Vault Gurgaon, The Vault Ghaziabad,
                   and The Vault Goa are all on the way.
                 </p>
                 <p className="mt-4 font-body text-sm uppercase tracking-[0.25em] text-gold/80">
@@ -48,7 +48,7 @@ export function GoaBanner() {
                 <div className="flex items-center gap-2 text-card-white/55">
                   <MapPin className="h-4 w-4 text-gold" />
                   <span className="font-body text-xs uppercase tracking-widest">
-                    Gurgaon · Noida · Goa
+                    Gurgaon · Ghaziabad · Goa
                   </span>
                 </div>
                 <p className="max-w-xs font-body text-sm text-card-white/55 lg:text-right">
