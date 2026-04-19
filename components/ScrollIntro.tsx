@@ -34,6 +34,7 @@ export default function ScrollIntro() {
   const overlayRef = useRef<HTMLDivElement>(null);
   const hintRef = useRef<HTMLDivElement>(null);
   const framesRef = useRef<HTMLImageElement[]>([]);
+  const frameLoadedRef = useRef<boolean[]>(new Array(TOTAL_FRAMES).fill(false));
   const currentFrameRef = useRef(-1);
   const tickingRef = useRef(false);
   const [loaded, setLoaded] = useState(false);
@@ -50,41 +51,82 @@ export default function ScrollIntro() {
   }, [loaded]);
 
   // Zoom transition config
-  const ZOOM_START = 0.75; // progress at which zoom begins
+  const ZOOM_START = 0.8; // progress at which zoom begins
   const ZOOM_MAX_SCALE = 3.5; // how far it zooms in
-  const FADE_START = 0.8; // progress at which fade-out begins
+  const FADE_START = 0.85; // progress at which fade-out begins
 
-  // Preload frames — show the site after the first 25% are ready,
-  // continue loading the rest in the background.
+  // Remove the static HTML loader once React takes over (we show our own loader)
+  useEffect(() => {
+    const el = document.getElementById("initial-loader");
+    if (el) el.remove();
+    const style = document.getElementById("initial-loader-style");
+    if (style) style.remove();
+  }, []);
+
+  // Unlock scroll and show the site
+  const finishLoading = useCallback((imgs: HTMLImageElement[]) => {
+    framesRef.current = imgs;
+    window.scrollTo(0, 0);
+    document.documentElement.classList.remove("loading-lock");
+    setLoaded(true);
+  }, []);
+
+  // Preload frames with early threshold + hard timeout.
+  // Shows after 25% loaded OR 10 seconds — whichever comes first.
+  // Remaining frames continue loading in background.
   useEffect(() => {
     let loadedCount = 0;
+    let unlocked = false;
     const imgs: HTMLImageElement[] = [];
     const EARLY_THRESHOLD = Math.ceil(TOTAL_FRAMES * 0.25);
+
+    const unlock = () => {
+      if (unlocked) return;
+      unlocked = true;
+      finishLoading(imgs);
+    };
+
+    // Hard timeout — if frames are slow (Instagram browser, slow connection),
+    // show the site after 10 seconds no matter what.
+    const timeout = setTimeout(unlock, 10000);
 
     for (let i = 1; i <= TOTAL_FRAMES; i++) {
       const img = new Image();
       img.src = getFrameSrc(i);
-      img.onload = img.onerror = () => {
+      const frameIdx = i - 1;
+      const onDone = () => {
+        if (img.naturalWidth) frameLoadedRef.current[frameIdx] = true;
         loadedCount++;
         setLoadProgress(loadedCount / TOTAL_FRAMES);
-        if (loadedCount >= EARLY_THRESHOLD && !framesRef.current.length) {
-          framesRef.current = imgs;
-          setLoaded(true);
-        }
-        if (loadedCount >= TOTAL_FRAMES) {
-          framesRef.current = imgs;
+
+        // Unlock once 25% is ready
+        if (loadedCount >= EARLY_THRESHOLD) {
+          unlock();
         }
       };
+      img.onload = onDone;
+      img.onerror = onDone;
       imgs.push(img);
     }
-  }, []);
+
+    return () => clearTimeout(timeout);
+  }, [finishLoading]);
 
   // Draw a frame to canvas using cover-fit on every viewport — image fills the
   // entire viewport with overflow cropped on whichever axis has the larger ratio.
   const drawFrame = useCallback((index: number) => {
     const canvas = canvasRef.current;
-    const img = framesRef.current[index];
-    if (!canvas || !img) return;
+    if (!canvas) return;
+
+    // Find the nearest loaded frame (prefer exact, then search backwards)
+    let targetIdx = index;
+    if (!frameLoadedRef.current[targetIdx]) {
+      for (let j = targetIdx - 1; j >= 0; j--) {
+        if (frameLoadedRef.current[j]) { targetIdx = j; break; }
+      }
+    }
+    const img = framesRef.current[targetIdx];
+    if (!img || !frameLoadedRef.current[targetIdx]) return;
 
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
@@ -251,7 +293,7 @@ export default function ScrollIntro() {
       <section
         ref={sectionRef}
         className="relative w-full"
-        style={{ height: "400vh", maxWidth: "100vw" }}
+        style={{ height: "350vh", maxWidth: "100vw" }}
       >
         <div
           ref={stickyRef}

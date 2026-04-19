@@ -117,12 +117,12 @@ export function Hero() {
           className="mt-8 flex flex-col items-stretch gap-3 sm:flex-row sm:justify-center md:mt-10 md:gap-4"
         >
           <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-            <button
-              onClick={() => window.dispatchEvent(new Event("openWaitlist"))}
+            <a
+              href="/book"
               className="inline-flex min-w-[180px] items-center justify-center rounded-sm bg-gold px-6 py-3 font-body text-xs font-semibold uppercase tracking-widest text-black transition-colors hover:bg-gold-light md:min-w-[200px] md:px-8 md:py-3.5 md:text-sm"
             >
-              Join Waitlist →
-            </button>
+              Book Your Seat →
+            </a>
           </motion.div>
           <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
             <a

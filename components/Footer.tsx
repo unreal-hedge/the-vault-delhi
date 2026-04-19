@@ -8,6 +8,7 @@ const nav = [
   { href: "/about", label: "About" },
   { href: "/games", label: "Games" },
   { href: "/menu", label: "Menu" },
+  { href: "/book", label: "Book a Seat" },
   { href: "/#cash-festival", label: "Cash Festival" },
   { href: "/careers", label: "Careers" },
   { href: "/franchise", label: "Franchise" },
@@ -30,7 +31,7 @@ export function Footer() {
             </p>
             <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-border bg-smoke px-4 py-2">
               <span className="h-2 w-2 animate-pulse-live rounded-full bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.8)]" aria-hidden />
-              <span className="font-bebas text-sm tracking-[0.2em] text-emerald-400">LIVE SOON</span>
+              <span className="font-bebas text-sm tracking-[0.2em] text-emerald-400">LIVE NOW</span>
               <span className="font-body text-xs text-card-white/50">24/7</span>
             </div>
           </div>

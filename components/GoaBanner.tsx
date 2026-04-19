@@ -54,12 +54,12 @@ export function GoaBanner() {
                 <p className="max-w-xs font-body text-sm text-card-white/55 lg:text-right">
                   Be the first to know when our new rooms open their doors.
                 </p>
-                <button
-                  onClick={() => window.dispatchEvent(new Event("openWaitlist"))}
+                <a
+                  href="/book"
                   className="inline-flex rounded-sm border-2 border-gold/80 px-6 py-3 font-body text-xs font-semibold uppercase tracking-widest text-gold transition-colors hover:border-gold hover:bg-gold/10"
                 >
-                  Join the Waitlist
-                </button>
+                  Reserve Your Seat
+                </a>
               </div>
             </div>
           </div>

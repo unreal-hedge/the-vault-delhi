@@ -2,7 +2,7 @@ import { getSupabaseAdmin } from "@/lib/supabase-admin";
 import { logoutAction } from "./actions";
 import { LiveUsersBadge } from "@/components/LiveUsersBadge";
 import { ExportSignupsButton } from "@/components/ExportSignupsButton";
-import { Users, Eye, Calendar, TrendingUp, LogOut, Instagram, Phone } from "lucide-react";
+import { Users, Eye, Calendar, TrendingUp, LogOut, Instagram, Phone, CalendarCheck } from "lucide-react";
 
 // Never cache the dashboard — every reload should show fresh data.
 export const dynamic = "force-dynamic";
@@ -13,6 +13,15 @@ type Signup = {
   name: string | null;
   phone: string | null;
   instagram_handle: string | null;
+  created_at: string;
+};
+
+type Booking = {
+  id: number | string;
+  name: string;
+  phone: string;
+  slot_date: string;
+  slot_time: string;
   created_at: string;
 };
 
@@ -34,6 +43,9 @@ function startOf(period: "day" | "week" | "month"): string {
 
 async function loadData() {
   const db = getSupabaseAdmin();
+  // Today's date string for filtering upcoming bookings
+  const todayStr = new Date().toISOString().split("T")[0];
+
   const [
     signupsRes,
     totalSignupsRes,
@@ -41,6 +53,8 @@ async function loadData() {
     visitsWeekRes,
     visitsMonthRes,
     visitsTotalRes,
+    bookingsRes,
+    totalBookingsRes,
   ] = await Promise.all([
     db
       .from("waitlist")
@@ -61,6 +75,17 @@ async function loadData() {
       .select("id", { count: "exact", head: true })
       .gte("created_at", startOf("month")),
     db.from("page_views").select("id", { count: "exact", head: true }),
+    db
+      .from("bookings")
+      .select("id, name, phone, slot_date, slot_time, created_at")
+      .gte("slot_date", todayStr)
+      .order("slot_date", { ascending: true })
+      .order("slot_time", { ascending: true })
+      .limit(200),
+    db
+      .from("bookings")
+      .select("id", { count: "exact", head: true })
+      .gte("slot_date", todayStr),
   ]);
 
   return {
@@ -73,7 +98,27 @@ async function loadData() {
     visitsTotal: visitsTotalRes.count ?? 0,
     pageViewsMissing:
       visitsTodayRes.error?.message?.includes("page_views") ?? false,
+    bookings: (bookingsRes.data ?? []) as Booking[],
+    bookingsError: bookingsRes.error?.message ?? null,
+    totalUpcoming: totalBookingsRes.count ?? 0,
+    bookingsMissing:
+      bookingsRes.error?.message?.includes("bookings") ?? false,
   };
+}
+
+const SLOT_LABELS: Record<string, string> = {
+  "00:00": "12 AM – 3 AM",
+  "03:00": "3 AM – 6 AM",
+  "06:00": "6 AM – 9 AM",
+  "09:00": "9 AM – 12 PM",
+  "12:00": "12 PM – 3 PM",
+  "15:00": "3 PM – 6 PM",
+  "18:00": "6 PM – 9 PM",
+  "21:00": "9 PM – 12 AM",
+};
+
+function formatSlotLabel(slot: string) {
+  return SLOT_LABELS[slot] || slot;
 }
 
 function formatDateTime(iso: string) {
@@ -156,7 +201,13 @@ export default async function DashboardPage() {
         )}
 
         {/* Stat cards */}
-        <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+          <StatCard
+            icon={<CalendarCheck className="h-5 w-5" />}
+            label="Upcoming Bookings"
+            value={data.totalUpcoming.toLocaleString("en-IN")}
+            sub="Seats reserved"
+          />
           <StatCard
             icon={<Users className="h-5 w-5" />}
             label="Total Signups"
@@ -177,6 +228,119 @@ export default async function DashboardPage() {
           />
           <LiveCard />
         </section>
+
+        {/* Bookings table */}
+        {data.bookingsMissing && (
+          <div className="mt-8 rounded-md border border-amber-500/40 bg-amber-500/10 px-5 py-4 font-body text-sm text-amber-200">
+            <strong className="font-semibold">Heads up:</strong> the{" "}
+            <code className="font-mono text-amber-100">bookings</code> table
+            doesn&apos;t exist yet. Run{" "}
+            <code className="font-mono text-amber-100">
+              supabase-bookings-setup.sql
+            </code>{" "}
+            in your Supabase SQL editor to enable seat bookings.
+          </div>
+        )}
+
+        {!data.bookingsMissing && (
+          <section className="mt-12">
+            <div className="mb-4">
+              <h2 className="font-display text-2xl text-card-white md:text-3xl">
+                Upcoming Bookings
+              </h2>
+              <p className="mt-1 font-body text-sm text-card-white/55">
+                All reservations from today onwards — sorted by date and time.
+              </p>
+            </div>
+
+            {data.bookings.length === 0 && (
+              <div className="rounded-md border border-border bg-smoke/60 px-6 py-12 text-center font-body text-sm text-card-white/55">
+                No upcoming bookings yet.
+              </div>
+            )}
+
+            {data.bookings.length > 0 && (
+              <div className="overflow-hidden rounded-md border border-border bg-smoke/60">
+                <table className="hidden w-full md:table">
+                  <thead className="border-b border-border bg-black/30">
+                    <tr className="text-left">
+                      <Th>Date</Th>
+                      <Th>Slot</Th>
+                      <Th>Name</Th>
+                      <Th>Phone</Th>
+                      <Th className="text-right">Booked At</Th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {data.bookings.map((b) => (
+                      <tr
+                        key={b.id}
+                        className="border-b border-border/60 transition-colors last:border-b-0 hover:bg-black/20"
+                      >
+                        <Td className="font-body text-sm font-medium text-gold">
+                          {new Date(b.slot_date + "T00:00:00").toLocaleDateString("en-IN", {
+                            weekday: "short",
+                            day: "numeric",
+                            month: "short",
+                          })}
+                        </Td>
+                        <Td className="font-mono text-sm text-card-white/85">
+                          {formatSlotLabel(b.slot_time)}
+                        </Td>
+                        <Td className="font-body text-sm font-medium text-card-white">
+                          {b.name}
+                        </Td>
+                        <Td>
+                          <a
+                            href={`tel:${b.phone}`}
+                            className="font-mono text-sm text-card-white/85 hover:text-gold"
+                          >
+                            {b.phone}
+                          </a>
+                        </Td>
+                        <Td className="text-right font-body text-xs text-card-white/55">
+                          {formatDateTime(b.created_at)}
+                        </Td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+
+                <ul className="divide-y divide-border/60 md:hidden">
+                  {data.bookings.map((b) => (
+                    <li key={b.id} className="px-5 py-4">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="min-w-0">
+                          <p className="font-body text-xs font-semibold text-gold">
+                            {new Date(b.slot_date + "T00:00:00").toLocaleDateString("en-IN", {
+                              weekday: "short",
+                              day: "numeric",
+                              month: "short",
+                            })}{" "}
+                            · {formatSlotLabel(b.slot_time)}
+                          </p>
+                          <p className="mt-1 truncate font-body text-sm font-semibold text-card-white">
+                            {b.name}
+                          </p>
+                          <a
+                            href={`tel:${b.phone}`}
+                            className="mt-1 flex items-center gap-1.5 font-mono text-xs text-card-white/75"
+                          >
+                            <Phone className="h-3 w-3" />
+                            {b.phone}
+                          </a>
+                        </div>
+                        <p className="shrink-0 font-body text-[11px] uppercase tracking-wider text-card-white/40">
+                          {formatDateTime(b.created_at)}
+                        </p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </section>
+        )}
 
         {/* Signups table */}
         <section className="mt-12">
