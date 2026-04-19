@@ -83,12 +83,12 @@ export function CashFestival() {
 
         <ScrollAnimation delay={0.2}>
           <div className="mt-12 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
-            <a
+            <Link
               href="/book"
               className="inline-flex rounded-sm bg-gold px-8 py-3.5 font-body text-sm font-semibold uppercase tracking-widest text-black transition-colors hover:bg-gold-light"
             >
               Book Your Seat
-            </a>
+            </Link>
           </div>
         </ScrollAnimation>
       </div>
