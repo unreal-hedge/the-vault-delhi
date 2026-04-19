@@ -41,10 +41,21 @@ function startOf(period: "day" | "week" | "month"): string {
   return d.toISOString();
 }
 
+async function withTimeout<T>(promise: PromiseLike<T>, ms: number, fallback: T): Promise<T> {
+  return Promise.race([
+    Promise.resolve(promise),
+    new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms)),
+  ]);
+}
+
+const QUERY_TIMEOUT = 8000; // 8 seconds max per query
+
 async function loadData() {
   const db = getSupabaseAdmin();
   // Today's date string for filtering upcoming bookings
   const todayStr = new Date().toISOString().split("T")[0];
+
+  const emptyRes = { data: null, error: null, count: null } as never;
 
   const [
     signupsRes,
@@ -56,36 +67,74 @@ async function loadData() {
     bookingsRes,
     totalBookingsRes,
   ] = await Promise.all([
-    db
-      .from("waitlist")
-      .select("id, name, phone, instagram_handle, created_at")
-      .order("created_at", { ascending: false })
-      .limit(200),
-    db.from("waitlist").select("id", { count: "exact", head: true }),
-    db
-      .from("page_views")
-      .select("id", { count: "exact", head: true })
-      .gte("created_at", startOf("day")),
-    db
-      .from("page_views")
-      .select("id", { count: "exact", head: true })
-      .gte("created_at", startOf("week")),
-    db
-      .from("page_views")
-      .select("id", { count: "exact", head: true })
-      .gte("created_at", startOf("month")),
-    db.from("page_views").select("id", { count: "exact", head: true }),
-    db
-      .from("bookings")
-      .select("id, name, phone, slot_date, slot_time, created_at")
-      .gte("slot_date", todayStr)
-      .order("slot_date", { ascending: true })
-      .order("slot_time", { ascending: true })
-      .limit(200),
-    db
-      .from("bookings")
-      .select("id", { count: "exact", head: true })
-      .gte("slot_date", todayStr),
+    withTimeout(
+      db
+        .from("waitlist")
+        .select("id, name, phone, instagram_handle, created_at")
+        .order("created_at", { ascending: false })
+        .limit(200)
+        .then((r) => r),
+      QUERY_TIMEOUT,
+      emptyRes
+    ),
+    withTimeout(
+      db.from("waitlist").select("id", { count: "exact", head: true }).then((r) => r),
+      QUERY_TIMEOUT,
+      emptyRes
+    ),
+    withTimeout(
+      db
+        .from("page_views")
+        .select("id", { count: "exact", head: true })
+        .gte("created_at", startOf("day"))
+        .then((r) => r),
+      QUERY_TIMEOUT,
+      emptyRes
+    ),
+    withTimeout(
+      db
+        .from("page_views")
+        .select("id", { count: "exact", head: true })
+        .gte("created_at", startOf("week"))
+        .then((r) => r),
+      QUERY_TIMEOUT,
+      emptyRes
+    ),
+    withTimeout(
+      db
+        .from("page_views")
+        .select("id", { count: "exact", head: true })
+        .gte("created_at", startOf("month"))
+        .then((r) => r),
+      QUERY_TIMEOUT,
+      emptyRes
+    ),
+    withTimeout(
+      db.from("page_views").select("id", { count: "exact", head: true }).then((r) => r),
+      QUERY_TIMEOUT,
+      emptyRes
+    ),
+    withTimeout(
+      db
+        .from("bookings")
+        .select("id, name, phone, slot_date, slot_time, created_at")
+        .gte("slot_date", todayStr)
+        .order("slot_date", { ascending: true })
+        .order("slot_time", { ascending: true })
+        .limit(200)
+        .then((r) => r),
+      QUERY_TIMEOUT,
+      emptyRes
+    ),
+    withTimeout(
+      db
+        .from("bookings")
+        .select("id", { count: "exact", head: true })
+        .gte("slot_date", todayStr)
+        .then((r) => r),
+      QUERY_TIMEOUT,
+      emptyRes
+    ),
   ]);
 
   return {
