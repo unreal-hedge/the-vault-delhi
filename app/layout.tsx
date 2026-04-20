@@ -141,21 +141,27 @@ export default function RootLayout({
         <script
           dangerouslySetInnerHTML={{
             __html: `
-              if (window.location.pathname === "/" || window.location.pathname === "") {
-                document.documentElement.classList.add("loading-lock");
-                // Hard fallback: if React never hydrates (Instagram/WebView),
-                // remove the loader after 12 seconds so the site is still usable.
-                setTimeout(function() {
+              (function(){
+                try {
+                  var p = window.location.pathname;
+                  if (p === "/" || p === "") {
+                    document.documentElement.classList.add("loading-lock");
+                    setTimeout(function() {
+                      var el = document.getElementById("initial-loader");
+                      if (el) el.style.display = "none";
+                      document.documentElement.classList.remove("loading-lock");
+                    }, 12000);
+                  } else {
+                    var el = document.getElementById("initial-loader");
+                    if (el) el.remove();
+                    var st = document.getElementById("initial-loader-style");
+                    if (st) st.remove();
+                  }
+                } catch(e) {
                   var el = document.getElementById("initial-loader");
-                  if (el) el.style.display = "none";
-                  document.documentElement.classList.remove("loading-lock");
-                }, 12000);
-              } else {
-                var el = document.getElementById("initial-loader");
-                if (el) el.remove();
-                var st = document.getElementById("initial-loader-style");
-                if (st) st.remove();
-              }
+                  if (el) el.remove();
+                }
+              })();
             `,
           }}
         />

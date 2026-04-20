@@ -33,7 +33,13 @@ export async function loginAction(formData: FormData): Promise<LoginResult | voi
   const ip = getClientIp();
 
   // --- Rate limit check (fails closed) ---
-  const rl = await checkRateLimit(ip);
+  let rl: Awaited<ReturnType<typeof checkRateLimit>>;
+  try {
+    rl = await checkRateLimit(ip);
+  } catch (err) {
+    console.error("[login] checkRateLimit threw", err);
+    return { error: "Login is temporarily unavailable. Try again soon." };
+  }
   if (!rl.allowed) {
     const minutes = Math.max(1, Math.ceil(rl.retryInMs / 60000));
     return {

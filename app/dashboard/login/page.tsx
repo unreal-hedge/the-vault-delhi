@@ -12,10 +12,15 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    const formData = new FormData(e.currentTarget);
-    const res = await loginAction(formData);
-    if (res?.error) {
-      setError(res.error);
+    try {
+      const formData = new FormData(e.currentTarget);
+      const res = await loginAction(formData);
+      if (res?.error) {
+        setError(res.error);
+        setLoading(false);
+      }
+    } catch {
+      setError("Something went wrong. Please try again.");
       setLoading(false);
     }
   }
