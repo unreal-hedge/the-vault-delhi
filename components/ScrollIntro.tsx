@@ -57,10 +57,8 @@ export default function ScrollIntro() {
 
   // Remove the static HTML loader once React takes over (we show our own loader)
   useEffect(() => {
-    const el = document.getElementById("initial-loader");
-    if (el) el.remove();
-    const style = document.getElementById("initial-loader-style");
-    if (style) style.remove();
+    const wrapper = document.getElementById("initial-loader-wrapper");
+    if (wrapper) wrapper.innerHTML = "";
   }, []);
 
   // Unlock scroll and show the site
