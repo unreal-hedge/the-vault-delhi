@@ -24,18 +24,23 @@ function getPresenceKey(): string {
 export function AnalyticsTracker() {
   const pathname = usePathname();
 
+  // Only track analytics on the real production domain — skip Vercel previews.
+  const isVercel = typeof window !== "undefined" && window.location.hostname.includes("vercel.app");
+
   // Page views — fires on every route change, except dashboard routes
-  // (the owner viewing the dashboard shouldn't inflate analytics).
+  // and Vercel deployments (only the real site should count).
   useEffect(() => {
+    if (isVercel) return;
     if (pathname.startsWith("/dashboard")) return;
     supabase.from("page_views").insert([{ path: pathname }]);
-  }, [pathname]);
+  }, [pathname, isVercel]);
 
   // Presence — set up once per tab with a STABLE key so in-tab navigation
-  // doesn't churn. Skips on /dashboard; the effect re-runs when the
-  // pathname crosses the dashboard boundary, tearing down on enter and
+  // doesn't churn. Skips on /dashboard and Vercel; the effect re-runs when
+  // the pathname crosses the dashboard boundary, tearing down on enter and
   // rebuilding on exit.
   useEffect(() => {
+    if (isVercel) return;
     if (pathname.startsWith("/dashboard")) return;
     const key = getPresenceKey();
     if (!key) return;
