@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
 import { logoutAction } from "./actions";
 import { LiveUsersBadge } from "@/components/LiveUsersBadge";
@@ -48,11 +49,10 @@ async function withTimeout<T>(promise: PromiseLike<T>, ms: number, fallback: T):
   ]);
 }
 
-const QUERY_TIMEOUT = 8000; // 8 seconds max per query
+const QUERY_TIMEOUT = 8000;
 
 async function loadData() {
   const db = getSupabaseAdmin();
-  // Today's date string for filtering upcoming bookings
   const todayStr = new Date().toISOString().split("T")[0];
 
   const emptyRes = { data: null, error: null, count: null } as never;
@@ -68,72 +68,36 @@ async function loadData() {
     totalBookingsRes,
   ] = await Promise.all([
     withTimeout(
-      db
-        .from("waitlist")
-        .select("id, name, phone, instagram_handle, created_at")
-        .order("created_at", { ascending: false })
-        .limit(200)
-        .then((r) => r),
-      QUERY_TIMEOUT,
-      emptyRes
+      db.from("waitlist").select("id, name, phone, instagram_handle, created_at").order("created_at", { ascending: false }).limit(200).then((r) => r),
+      QUERY_TIMEOUT, emptyRes
     ),
     withTimeout(
       db.from("waitlist").select("id", { count: "exact", head: true }).then((r) => r),
-      QUERY_TIMEOUT,
-      emptyRes
+      QUERY_TIMEOUT, emptyRes
     ),
     withTimeout(
-      db
-        .from("page_views")
-        .select("id", { count: "exact", head: true })
-        .gte("created_at", startOf("day"))
-        .then((r) => r),
-      QUERY_TIMEOUT,
-      emptyRes
+      db.from("page_views").select("id", { count: "exact", head: true }).gte("created_at", startOf("day")).then((r) => r),
+      QUERY_TIMEOUT, emptyRes
     ),
     withTimeout(
-      db
-        .from("page_views")
-        .select("id", { count: "exact", head: true })
-        .gte("created_at", startOf("week"))
-        .then((r) => r),
-      QUERY_TIMEOUT,
-      emptyRes
+      db.from("page_views").select("id", { count: "exact", head: true }).gte("created_at", startOf("week")).then((r) => r),
+      QUERY_TIMEOUT, emptyRes
     ),
     withTimeout(
-      db
-        .from("page_views")
-        .select("id", { count: "exact", head: true })
-        .gte("created_at", startOf("month"))
-        .then((r) => r),
-      QUERY_TIMEOUT,
-      emptyRes
+      db.from("page_views").select("id", { count: "exact", head: true }).gte("created_at", startOf("month")).then((r) => r),
+      QUERY_TIMEOUT, emptyRes
     ),
     withTimeout(
       db.from("page_views").select("id", { count: "exact", head: true }).then((r) => r),
-      QUERY_TIMEOUT,
-      emptyRes
+      QUERY_TIMEOUT, emptyRes
     ),
     withTimeout(
-      db
-        .from("bookings")
-        .select("id, name, phone, slot_date, slot_time, created_at")
-        .gte("slot_date", todayStr)
-        .order("slot_date", { ascending: true })
-        .order("slot_time", { ascending: true })
-        .limit(200)
-        .then((r) => r),
-      QUERY_TIMEOUT,
-      emptyRes
+      db.from("bookings").select("id, name, phone, slot_date, slot_time, created_at").gte("slot_date", todayStr).order("slot_date", { ascending: true }).order("slot_time", { ascending: true }).limit(200).then((r) => r),
+      QUERY_TIMEOUT, emptyRes
     ),
     withTimeout(
-      db
-        .from("bookings")
-        .select("id", { count: "exact", head: true })
-        .gte("slot_date", todayStr)
-        .then((r) => r),
-      QUERY_TIMEOUT,
-      emptyRes
+      db.from("bookings").select("id", { count: "exact", head: true }).gte("slot_date", todayStr).then((r) => r),
+      QUERY_TIMEOUT, emptyRes
     ),
   ]);
 
@@ -145,13 +109,11 @@ async function loadData() {
     visitsWeek: visitsWeekRes.count ?? 0,
     visitsMonth: visitsMonthRes.count ?? 0,
     visitsTotal: visitsTotalRes.count ?? 0,
-    pageViewsMissing:
-      visitsTodayRes.error?.message?.includes("page_views") ?? false,
+    pageViewsMissing: visitsTodayRes.error?.message?.includes("page_views") ?? false,
     bookings: (bookingsRes.data ?? []) as Booking[],
     bookingsError: bookingsRes.error?.message ?? null,
     totalUpcoming: totalBookingsRes.count ?? 0,
-    bookingsMissing:
-      bookingsRes.error?.message?.includes("bookings") ?? false,
+    bookingsMissing: bookingsRes.error?.message?.includes("bookings") ?? false,
   };
 }
 
@@ -181,39 +143,11 @@ function formatDateTime(iso: string) {
   });
 }
 
-export default async function DashboardPage() {
-  let data: Awaited<ReturnType<typeof loadData>> | null = null;
-  let fatalError: string | null = null;
-  try {
-    data = await loadData();
-  } catch (err) {
-    fatalError = err instanceof Error ? err.message : "Failed to load dashboard";
-  }
+// --------------- Shell (renders instantly) ---------------
 
-  if (fatalError || !data) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-black px-5">
-        <div className="max-w-lg rounded-md border border-red-500/40 bg-red-500/10 p-8 text-center">
-          <h1 className="font-display text-2xl text-card-white">
-            Dashboard is not configured
-          </h1>
-          <p className="mt-3 font-body text-sm text-card-white/70">
-            {fatalError ??
-              "The dashboard could not load its data. Check the Supabase setup."}
-          </p>
-          <p className="mt-5 font-body text-xs text-card-white/50">
-            Set <code className="font-mono text-gold">SUPABASE_SERVICE_ROLE_KEY</code> in
-            your <code className="font-mono text-gold">.env.local</code> and run{" "}
-            <code className="font-mono text-gold">supabase-dashboard-setup.sql</code>.
-          </p>
-        </div>
-      </div>
-    );
-  }
-
+export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-black text-card-white">
-      {/* Header */}
       <header className="border-b border-border bg-deep-green">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-6 md:px-8">
           <div>
@@ -237,281 +171,152 @@ export default async function DashboardPage() {
       </header>
 
       <main className="mx-auto max-w-7xl px-5 py-10 md:px-8 md:py-14">
-        {data.pageViewsMissing && (
-          <div className="mb-8 rounded-md border border-amber-500/40 bg-amber-500/10 px-5 py-4 font-body text-sm text-amber-200">
-            <strong className="font-semibold">Heads up:</strong> the{" "}
-            <code className="font-mono text-amber-100">page_views</code> table
-            doesn&apos;t exist yet. Run{" "}
-            <code className="font-mono text-amber-100">
-              supabase-dashboard-setup.sql
-            </code>{" "}
-            in your Supabase SQL editor to enable visit analytics.
+        <Suspense fallback={<DashboardSkeleton />}>
+          <DashboardContent />
+        </Suspense>
+      </main>
+    </div>
+  );
+}
+
+// --------------- Skeleton (shown while data loads) ---------------
+
+function DashboardSkeleton() {
+  return (
+    <>
+      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <div key={i} className="animate-pulse rounded-md border border-border bg-smoke/60 p-5">
+            <div className="h-3 w-24 rounded bg-card-white/10" />
+            <div className="mt-4 h-10 w-16 rounded bg-card-white/10" />
+            <div className="mt-2 h-3 w-20 rounded bg-card-white/10" />
           </div>
-        )}
+        ))}
+      </section>
+      <div className="mt-12 flex items-center justify-center py-20">
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-gold border-t-transparent" />
+        <span className="ml-3 font-body text-sm text-card-white/55">Loading dashboard data...</span>
+      </div>
+    </>
+  );
+}
 
-        {/* Stat cards */}
-        <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-          <StatCard
-            icon={<CalendarCheck className="h-5 w-5" />}
-            label="Upcoming Bookings"
-            value={data.totalUpcoming.toLocaleString("en-IN")}
-            sub="Seats reserved"
-          />
-          <StatCard
-            icon={<Users className="h-5 w-5" />}
-            label="Total Signups"
-            value={data.totalSignups.toLocaleString("en-IN")}
-            sub="Waitlist + invites"
-          />
-          <StatCard
-            icon={<Eye className="h-5 w-5" />}
-            label="Visits Today"
-            value={data.visitsToday.toLocaleString("en-IN")}
-            sub={`${data.visitsWeek.toLocaleString("en-IN")} this week`}
-          />
-          <StatCard
-            icon={<Calendar className="h-5 w-5" />}
-            label="Visits This Month"
-            value={data.visitsMonth.toLocaleString("en-IN")}
-            sub={`${data.visitsTotal.toLocaleString("en-IN")} all-time`}
-          />
-          <LiveCard />
-        </section>
+// --------------- Async content (streamed via Suspense) ---------------
 
-        {/* Bookings table */}
-        {data.bookingsMissing && (
-          <div className="mt-8 rounded-md border border-amber-500/40 bg-amber-500/10 px-5 py-4 font-body text-sm text-amber-200">
-            <strong className="font-semibold">Heads up:</strong> the{" "}
-            <code className="font-mono text-amber-100">bookings</code> table
-            doesn&apos;t exist yet. Run{" "}
-            <code className="font-mono text-amber-100">
-              supabase-bookings-setup.sql
-            </code>{" "}
-            in your Supabase SQL editor to enable seat bookings.
-          </div>
-        )}
+async function DashboardContent() {
+  let data: Awaited<ReturnType<typeof loadData>> | null = null;
+  let fatalError: string | null = null;
+  try {
+    data = await loadData();
+  } catch (err) {
+    fatalError = err instanceof Error ? err.message : "Failed to load dashboard";
+  }
 
-        {!data.bookingsMissing && (
-          <section className="mt-12">
-            <div className="mb-4">
-              <h2 className="font-display text-2xl text-card-white md:text-3xl">
-                Upcoming Bookings
-              </h2>
-              <p className="mt-1 font-body text-sm text-card-white/55">
-                All reservations from today onwards — sorted by date and time.
-              </p>
-            </div>
+  if (fatalError || !data) {
+    return (
+      <div className="flex items-center justify-center px-5 py-20">
+        <div className="max-w-lg rounded-md border border-red-500/40 bg-red-500/10 p-8 text-center">
+          <h2 className="font-display text-2xl text-card-white">Dashboard error</h2>
+          <p className="mt-3 font-body text-sm text-card-white/70">
+            {fatalError ?? "The dashboard could not load its data. Check the Supabase setup."}
+          </p>
+          <p className="mt-5 font-body text-xs text-card-white/50">
+            Set <code className="font-mono text-gold">SUPABASE_SERVICE_ROLE_KEY</code> in
+            your <code className="font-mono text-gold">.env.local</code> and run{" "}
+            <code className="font-mono text-gold">supabase-dashboard-setup.sql</code>.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
-            {data.bookings.length === 0 && (
-              <div className="rounded-md border border-border bg-smoke/60 px-6 py-12 text-center font-body text-sm text-card-white/55">
-                No upcoming bookings yet.
-              </div>
-            )}
+  return (
+    <>
+      {data.pageViewsMissing && (
+        <div className="mb-8 rounded-md border border-amber-500/40 bg-amber-500/10 px-5 py-4 font-body text-sm text-amber-200">
+          <strong className="font-semibold">Heads up:</strong> the{" "}
+          <code className="font-mono text-amber-100">page_views</code> table
+          doesn&apos;t exist yet. Run{" "}
+          <code className="font-mono text-amber-100">supabase-dashboard-setup.sql</code>{" "}
+          in your Supabase SQL editor to enable visit analytics.
+        </div>
+      )}
 
-            {data.bookings.length > 0 && (
-              <div className="overflow-hidden rounded-md border border-border bg-smoke/60">
-                <table className="hidden w-full md:table">
-                  <thead className="border-b border-border bg-black/30">
-                    <tr className="text-left">
-                      <Th>Date</Th>
-                      <Th>Slot</Th>
-                      <Th>Name</Th>
-                      <Th>Phone</Th>
-                      <Th className="text-right">Booked At</Th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {data.bookings.map((b) => (
-                      <tr
-                        key={b.id}
-                        className="border-b border-border/60 transition-colors last:border-b-0 hover:bg-black/20"
-                      >
-                        <Td className="font-body text-sm font-medium text-gold">
-                          {new Date(b.slot_date + "T00:00:00").toLocaleDateString("en-IN", {
-                            weekday: "short",
-                            day: "numeric",
-                            month: "short",
-                          })}
-                        </Td>
-                        <Td className="font-mono text-sm text-card-white/85">
-                          {formatSlotLabel(b.slot_time)}
-                        </Td>
-                        <Td className="font-body text-sm font-medium text-card-white">
-                          {b.name}
-                        </Td>
-                        <Td>
-                          <a
-                            href={`tel:${b.phone}`}
-                            className="font-mono text-sm text-card-white/85 hover:text-gold"
-                          >
-                            {b.phone}
-                          </a>
-                        </Td>
-                        <Td className="text-right font-body text-xs text-card-white/55">
-                          {formatDateTime(b.created_at)}
-                        </Td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        <StatCard icon={<CalendarCheck className="h-5 w-5" />} label="Upcoming Bookings" value={data.totalUpcoming.toLocaleString("en-IN")} sub="Seats reserved" />
+        <StatCard icon={<Users className="h-5 w-5" />} label="Total Signups" value={data.totalSignups.toLocaleString("en-IN")} sub="Waitlist + invites" />
+        <StatCard icon={<Eye className="h-5 w-5" />} label="Visits Today" value={data.visitsToday.toLocaleString("en-IN")} sub={`${data.visitsWeek.toLocaleString("en-IN")} this week`} />
+        <StatCard icon={<Calendar className="h-5 w-5" />} label="Visits This Month" value={data.visitsMonth.toLocaleString("en-IN")} sub={`${data.visitsTotal.toLocaleString("en-IN")} all-time`} />
+        <LiveCard />
+      </section>
 
-                <ul className="divide-y divide-border/60 md:hidden">
-                  {data.bookings.map((b) => (
-                    <li key={b.id} className="px-5 py-4">
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="min-w-0">
-                          <p className="font-body text-xs font-semibold text-gold">
-                            {new Date(b.slot_date + "T00:00:00").toLocaleDateString("en-IN", {
-                              weekday: "short",
-                              day: "numeric",
-                              month: "short",
-                            })}{" "}
-                            · {formatSlotLabel(b.slot_time)}
-                          </p>
-                          <p className="mt-1 truncate font-body text-sm font-semibold text-card-white">
-                            {b.name}
-                          </p>
-                          <a
-                            href={`tel:${b.phone}`}
-                            className="mt-1 flex items-center gap-1.5 font-mono text-xs text-card-white/75"
-                          >
-                            <Phone className="h-3 w-3" />
-                            {b.phone}
-                          </a>
-                        </div>
-                        <p className="shrink-0 font-body text-[11px] uppercase tracking-wider text-card-white/40">
-                          {formatDateTime(b.created_at)}
-                        </p>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </section>
-        )}
+      {data.bookingsMissing && (
+        <div className="mt-8 rounded-md border border-amber-500/40 bg-amber-500/10 px-5 py-4 font-body text-sm text-amber-200">
+          <strong className="font-semibold">Heads up:</strong> the{" "}
+          <code className="font-mono text-amber-100">bookings</code> table
+          doesn&apos;t exist yet. Run{" "}
+          <code className="font-mono text-amber-100">supabase-bookings-setup.sql</code>{" "}
+          in your Supabase SQL editor to enable seat bookings.
+        </div>
+      )}
 
-        {/* Signups table */}
+      {!data.bookingsMissing && (
         <section className="mt-12">
-          <div className="mb-4 flex items-center justify-between gap-4">
-            <div>
-              <h2 className="font-display text-2xl text-card-white md:text-3xl">
-                Signups
-              </h2>
-              <p className="mt-1 font-body text-sm text-card-white/55">
-                Everyone who joined the waitlist — newest first.
-              </p>
-            </div>
-            <ExportSignupsButton signups={data.signups} />
+          <div className="mb-4">
+            <h2 className="font-display text-2xl text-card-white md:text-3xl">Upcoming Bookings</h2>
+            <p className="mt-1 font-body text-sm text-card-white/55">All reservations from today onwards — sorted by date and time.</p>
           </div>
 
-          {data.signupsError && (
-            <div className="rounded-md border border-red-500/40 bg-red-500/10 px-5 py-4 font-body text-sm text-red-200">
-              Failed to load signups: {data.signupsError}
-            </div>
-          )}
-
-          {!data.signupsError && data.signups.length === 0 && (
+          {data.bookings.length === 0 && (
             <div className="rounded-md border border-border bg-smoke/60 px-6 py-12 text-center font-body text-sm text-card-white/55">
-              No signups yet. As soon as someone joins the waitlist, they&apos;ll
-              show up here.
+              No upcoming bookings yet.
             </div>
           )}
 
-          {data.signups.length > 0 && (
+          {data.bookings.length > 0 && (
             <div className="overflow-hidden rounded-md border border-border bg-smoke/60">
-              {/* Desktop table */}
               <table className="hidden w-full md:table">
                 <thead className="border-b border-border bg-black/30">
                   <tr className="text-left">
+                    <Th>Date</Th>
+                    <Th>Slot</Th>
                     <Th>Name</Th>
                     <Th>Phone</Th>
-                    <Th>Instagram</Th>
-                    <Th className="text-right">Joined</Th>
+                    <Th className="text-right">Booked At</Th>
                   </tr>
                 </thead>
                 <tbody>
-                  {data.signups.map((s) => (
-                    <tr
-                      key={s.id}
-                      className="border-b border-border/60 transition-colors last:border-b-0 hover:bg-black/20"
-                    >
-                      <Td className="font-body text-sm font-medium text-card-white">
-                        {s.name || "—"}
+                  {data.bookings.map((b) => (
+                    <tr key={b.id} className="border-b border-border/60 transition-colors last:border-b-0 hover:bg-black/20">
+                      <Td className="font-body text-sm font-medium text-gold">
+                        {new Date(b.slot_date + "T00:00:00").toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short" })}
                       </Td>
+                      <Td className="font-mono text-sm text-card-white/85">{formatSlotLabel(b.slot_time)}</Td>
+                      <Td className="font-body text-sm font-medium text-card-white">{b.name}</Td>
                       <Td>
-                        {s.phone ? (
-                          <a
-                            href={`tel:${s.phone}`}
-                            className="font-mono text-sm text-card-white/85 hover:text-gold"
-                          >
-                            {s.phone}
-                          </a>
-                        ) : (
-                          <span className="text-card-white/40">—</span>
-                        )}
+                        <a href={`tel:${b.phone}`} className="font-mono text-sm text-card-white/85 hover:text-gold">{b.phone}</a>
                       </Td>
-                      <Td>
-                        {s.instagram_handle ? (
-                          <a
-                            href={`https://instagram.com/${s.instagram_handle.replace(
-                              /^@/,
-                              ""
-                            )}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="font-body text-sm text-gold hover:underline"
-                          >
-                            @{s.instagram_handle.replace(/^@/, "")}
-                          </a>
-                        ) : (
-                          <span className="text-card-white/40">—</span>
-                        )}
-                      </Td>
-                      <Td className="text-right font-body text-xs text-card-white/55">
-                        {formatDateTime(s.created_at)}
-                      </Td>
+                      <Td className="text-right font-body text-xs text-card-white/55">{formatDateTime(b.created_at)}</Td>
                     </tr>
                   ))}
                 </tbody>
               </table>
 
-              {/* Mobile cards */}
               <ul className="divide-y divide-border/60 md:hidden">
-                {data.signups.map((s) => (
-                  <li key={s.id} className="px-5 py-4">
+                {data.bookings.map((b) => (
+                  <li key={b.id} className="px-5 py-4">
                     <div className="flex items-start justify-between gap-4">
                       <div className="min-w-0">
-                        <p className="truncate font-body text-sm font-semibold text-card-white">
-                          {s.name || "—"}
+                        <p className="font-body text-xs font-semibold text-gold">
+                          {new Date(b.slot_date + "T00:00:00").toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short" })}{" "}
+                          · {formatSlotLabel(b.slot_time)}
                         </p>
-                        {s.phone && (
-                          <a
-                            href={`tel:${s.phone}`}
-                            className="mt-1 flex items-center gap-1.5 font-mono text-xs text-card-white/75"
-                          >
-                            <Phone className="h-3 w-3" />
-                            {s.phone}
-                          </a>
-                        )}
-                        {s.instagram_handle && (
-                          <a
-                            href={`https://instagram.com/${s.instagram_handle.replace(
-                              /^@/,
-                              ""
-                            )}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="mt-1 flex items-center gap-1.5 font-body text-xs text-gold"
-                          >
-                            <Instagram className="h-3 w-3" />@
-                            {s.instagram_handle.replace(/^@/, "")}
-                          </a>
-                        )}
+                        <p className="mt-1 truncate font-body text-sm font-semibold text-card-white">{b.name}</p>
+                        <a href={`tel:${b.phone}`} className="mt-1 flex items-center gap-1.5 font-mono text-xs text-card-white/75">
+                          <Phone className="h-3 w-3" />{b.phone}
+                        </a>
                       </div>
-                      <p className="shrink-0 font-body text-[11px] uppercase tracking-wider text-card-white/40">
-                        {formatDateTime(s.created_at)}
-                      </p>
+                      <p className="shrink-0 font-body text-[11px] uppercase tracking-wider text-card-white/40">{formatDateTime(b.created_at)}</p>
                     </div>
                   </li>
                 ))}
@@ -519,33 +324,103 @@ export default async function DashboardPage() {
             </div>
           )}
         </section>
-      </main>
-    </div>
+      )}
+
+      <section className="mt-12">
+        <div className="mb-4 flex items-center justify-between gap-4">
+          <div>
+            <h2 className="font-display text-2xl text-card-white md:text-3xl">Signups</h2>
+            <p className="mt-1 font-body text-sm text-card-white/55">Everyone who joined the waitlist — newest first.</p>
+          </div>
+          <ExportSignupsButton signups={data.signups} />
+        </div>
+
+        {data.signupsError && (
+          <div className="rounded-md border border-red-500/40 bg-red-500/10 px-5 py-4 font-body text-sm text-red-200">
+            Failed to load signups: {data.signupsError}
+          </div>
+        )}
+
+        {!data.signupsError && data.signups.length === 0 && (
+          <div className="rounded-md border border-border bg-smoke/60 px-6 py-12 text-center font-body text-sm text-card-white/55">
+            No signups yet. As soon as someone joins the waitlist, they&apos;ll show up here.
+          </div>
+        )}
+
+        {data.signups.length > 0 && (
+          <div className="overflow-hidden rounded-md border border-border bg-smoke/60">
+            <table className="hidden w-full md:table">
+              <thead className="border-b border-border bg-black/30">
+                <tr className="text-left">
+                  <Th>Name</Th>
+                  <Th>Phone</Th>
+                  <Th>Instagram</Th>
+                  <Th className="text-right">Joined</Th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.signups.map((s) => (
+                  <tr key={s.id} className="border-b border-border/60 transition-colors last:border-b-0 hover:bg-black/20">
+                    <Td className="font-body text-sm font-medium text-card-white">{s.name || "—"}</Td>
+                    <Td>
+                      {s.phone ? (
+                        <a href={`tel:${s.phone}`} className="font-mono text-sm text-card-white/85 hover:text-gold">{s.phone}</a>
+                      ) : (
+                        <span className="text-card-white/40">—</span>
+                      )}
+                    </Td>
+                    <Td>
+                      {s.instagram_handle ? (
+                        <a href={`https://instagram.com/${s.instagram_handle.replace(/^@/, "")}`} target="_blank" rel="noopener noreferrer" className="font-body text-sm text-gold hover:underline">
+                          @{s.instagram_handle.replace(/^@/, "")}
+                        </a>
+                      ) : (
+                        <span className="text-card-white/40">—</span>
+                      )}
+                    </Td>
+                    <Td className="text-right font-body text-xs text-card-white/55">{formatDateTime(s.created_at)}</Td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            <ul className="divide-y divide-border/60 md:hidden">
+              {data.signups.map((s) => (
+                <li key={s.id} className="px-5 py-4">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="min-w-0">
+                      <p className="truncate font-body text-sm font-semibold text-card-white">{s.name || "—"}</p>
+                      {s.phone && (
+                        <a href={`tel:${s.phone}`} className="mt-1 flex items-center gap-1.5 font-mono text-xs text-card-white/75">
+                          <Phone className="h-3 w-3" />{s.phone}
+                        </a>
+                      )}
+                      {s.instagram_handle && (
+                        <a href={`https://instagram.com/${s.instagram_handle.replace(/^@/, "")}`} target="_blank" rel="noopener noreferrer" className="mt-1 flex items-center gap-1.5 font-body text-xs text-gold">
+                          <Instagram className="h-3 w-3" />@{s.instagram_handle.replace(/^@/, "")}
+                        </a>
+                      )}
+                    </div>
+                    <p className="shrink-0 font-body text-[11px] uppercase tracking-wider text-card-white/40">{formatDateTime(s.created_at)}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </section>
+    </>
   );
 }
 
-function StatCard({
-  icon,
-  label,
-  value,
-  sub,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-  sub: string;
-}) {
+function StatCard({ icon, label, value, sub }: { icon: React.ReactNode; label: string; value: string; sub: string }) {
   return (
     <div className="rounded-md border border-border bg-smoke/60 p-5 transition-colors hover:border-gold/50">
       <div className="flex items-center justify-between">
-        <p className="font-body text-[10px] font-semibold uppercase tracking-[0.2em] text-card-white/50">
-          {label}
-        </p>
+        <p className="font-body text-[10px] font-semibold uppercase tracking-[0.2em] text-card-white/50">{label}</p>
         <span className="text-gold">{icon}</span>
       </div>
-      <p className="mt-3 font-bebas text-4xl tracking-wide text-card-white md:text-5xl">
-        {value}
-      </p>
+      <p className="mt-3 font-bebas text-4xl tracking-wide text-card-white md:text-5xl">{value}</p>
       <p className="mt-1 font-body text-xs text-card-white/50">{sub}</p>
     </div>
   );
@@ -555,45 +430,19 @@ function LiveCard() {
   return (
     <div className="rounded-md border border-border bg-smoke/60 p-5 transition-colors hover:border-gold/50">
       <div className="flex items-center justify-between">
-        <p className="font-body text-[10px] font-semibold uppercase tracking-[0.2em] text-card-white/50">
-          Active Right Now
-        </p>
-        <span className="text-gold">
-          <TrendingUp className="h-5 w-5" />
-        </span>
+        <p className="font-body text-[10px] font-semibold uppercase tracking-[0.2em] text-card-white/50">Active Right Now</p>
+        <span className="text-gold"><TrendingUp className="h-5 w-5" /></span>
       </div>
-      <div className="mt-3">
-        <LiveUsersBadge />
-      </div>
-      <p className="mt-1 font-body text-xs text-card-white/50">
-        Live on the site
-      </p>
+      <div className="mt-3"><LiveUsersBadge /></div>
+      <p className="mt-1 font-body text-xs text-card-white/50">Live on the site</p>
     </div>
   );
 }
 
-function Th({
-  children,
-  className = "",
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) {
-  return (
-    <th
-      className={`px-5 py-3 font-body text-[10px] font-semibold uppercase tracking-[0.2em] text-card-white/55 ${className}`}
-    >
-      {children}
-    </th>
-  );
+function Th({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+  return <th className={`px-5 py-3 font-body text-[10px] font-semibold uppercase tracking-[0.2em] text-card-white/55 ${className}`}>{children}</th>;
 }
 
-function Td({
-  children,
-  className = "",
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) {
+function Td({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return <td className={`px-5 py-4 ${className}`}>{children}</td>;
 }

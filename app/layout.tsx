@@ -96,14 +96,11 @@ export default function RootLayout({
                         if (el) el.style.display = 'none';
                         document.documentElement.classList.remove('loading-lock');
                       }, 12000);
-                    } else {
-                      var w = document.getElementById('initial-loader-wrapper');
-                      if (w) w.innerHTML = '';
+                      return;
                     }
-                  } catch(e) {
-                    var w = document.getElementById('initial-loader-wrapper');
-                    if (w) w.innerHTML = '';
-                  }
+                  } catch(e) {}
+                  var w = document.getElementById('initial-loader-wrapper');
+                  if (w) { w.style.display = 'none'; w.innerHTML = ''; }
                 })();
               </script>
             `,
