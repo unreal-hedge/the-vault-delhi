@@ -112,7 +112,7 @@ export default function CareersPage() {
             </p>
             <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
               <a
-                href="mailto:info@vaultpokergzb.com?subject=Career%20Enquiry"
+                href="mailto:w.entertainment.vault@gmail.com?subject=Career%20Enquiry"
                 className="inline-flex rounded-sm bg-gold px-8 py-3.5 font-body text-sm font-semibold uppercase tracking-widest text-black transition-colors hover:bg-gold-light"
               >
                 Email Your CV

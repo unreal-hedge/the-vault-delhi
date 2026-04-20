@@ -92,10 +92,10 @@ export default function ContactPage() {
                 Email
               </h3>
               <a
-                href="mailto:info@vaultpokergzb.com"
+                href="mailto:w.entertainment.vault@gmail.com"
                 className="mt-2 inline-block font-body text-gold hover:underline"
               >
-                info@vaultpokergzb.com
+                w.entertainment.vault@gmail.com
               </a>
             </div>
             <div>

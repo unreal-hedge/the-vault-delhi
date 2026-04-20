@@ -67,8 +67,8 @@ export function Footer() {
                 </a>
               </p>
               <p>
-                <a href="mailto:info@vaultpokergzb.com" className="text-gold hover:underline">
-                  info@vaultpokergzb.com
+                <a href="mailto:w.entertainment.vault@gmail.com" className="text-gold hover:underline">
+                  w.entertainment.vault@gmail.com
                 </a>
               </p>
               <p>
