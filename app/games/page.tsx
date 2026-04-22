@@ -27,7 +27,7 @@ export default function GamesPage() {
             Games &amp; Tables
           </h1>
           <p className="mt-4 max-w-xl font-body text-lg text-card-white/60">
-            Three games. Six tables. 24 hours a day. Cash action that never sleeps.
+            Two games. Six tables. 24 hours a day. Cash action that never sleeps.
           </p>
         </div>
       </section>
@@ -38,10 +38,10 @@ export default function GamesPage() {
             What We Spread
           </p>
           <h2 className="mt-3 font-display text-4xl text-card-white md:text-5xl">
-            Three Games. Done Right.
+            Two Games. Done Right.
           </h2>
         </ScrollAnimation>
-        <div className="mt-12 grid gap-8 lg:grid-cols-3">
+        <div className="mt-12 grid gap-8 lg:grid-cols-2">
           <div className="rounded-lg border-2 border-gold/40 bg-smoke/60 p-8 md:p-10">
             <p className="font-bebas text-xl tracking-widest text-gold">Featured</p>
             <h3 className="mt-2 font-display text-3xl text-card-white md:text-4xl">
@@ -61,15 +61,6 @@ export default function GamesPage() {
               Four cards, big pots, and the action game of choice for
               experienced players. PLO tables run daily — ask the floor for
               current stakes.
-            </p>
-          </div>
-          <div className="rounded-lg border border-border bg-smoke/40 p-8 md:p-10">
-            <h3 className="font-display text-2xl text-card-white md:text-3xl">
-              Omaha Hi-Lo
-            </h3>
-            <p className="mt-4 font-body leading-relaxed text-card-white/70">
-              The split-pot variant that rewards reads and patience. A favourite
-              among our regulars — opened on demand whenever interest is there.
             </p>
           </div>
         </div>

@@ -17,7 +17,7 @@ const faqs = [
   },
   {
     q: "What games do you spread?",
-    a: "We run No Limit Hold'em, Pot Limit Omaha, and Omaha Hi-Lo. Hold'em runs around the clock; PLO and Omaha Hi-Lo open based on player demand.",
+    a: "We run No Limit Hold'em and Pot Limit Omaha. Hold'em runs around the clock; PLO opens based on player demand.",
   },
   {
     q: "What is the minimum buy-in?",

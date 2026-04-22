@@ -22,7 +22,7 @@ export function HomeAmenities() {
       <div className="mx-auto max-w-7xl px-5 md:px-8">
         <ScrollAnimation>
           <h2 className="font-display text-3xl text-card-white md:text-5xl lg:text-6xl">Built for the Serious Player</h2>
-          <p className="mt-3 max-w-2xl font-body text-sm text-card-white/55 md:mt-4 md:text-base">Six tables. Three games. One uncompromising standard. Everything you need to focus on the cards — nothing you don&apos;t.</p>
+          <p className="mt-3 max-w-2xl font-body text-sm text-card-white/55 md:mt-4 md:text-base">Six tables. Two games. One uncompromising standard. Everything you need to focus on the cards — nothing you don&apos;t.</p>
         </ScrollAnimation>
         <div className="mt-12 grid auto-rows-fr gap-6 sm:grid-cols-2 lg:grid-cols-3 md:mt-16">
           {amenities.map((a, i) => (

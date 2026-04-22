@@ -44,7 +44,7 @@ export default function AboutPage() {
             <span className="text-card-white">Yash Wadhwa</span>, we are Delhi
             NCR&apos;s first fully legal, purpose-built poker room — operating
             24 hours a day from Paras One33 Mall, 1st Floor. Six professional
-            tables. Three games. World-class dealers. And a standard of luxury
+            tables. Two games. World-class dealers. And a standard of luxury
             this region has never seen at a card table.
           </p>
         </ScrollAnimation>

@@ -14,7 +14,7 @@ const positions = [
     icon: Spade,
     title: "Professional Dealer",
     type: "Full Time",
-    body: "Tournament-grade dealing across NLH, PLO, and Omaha Hi-Lo. Experienced dealers welcome — we also train the right candidates.",
+    body: "Tournament-grade dealing across NLH and PLO. Experienced dealers welcome — we also train the right candidates.",
   },
   {
     icon: ShieldCheck,
