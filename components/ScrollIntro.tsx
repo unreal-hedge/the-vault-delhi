@@ -69,14 +69,17 @@ export default function ScrollIntro() {
     setLoaded(true);
   }, []);
 
-  // Preload frames with early threshold + hard timeout.
-  // Shows after 25% loaded OR 10 seconds — whichever comes first.
-  // Remaining frames continue loading in background.
+  // Preload frames in sequential batches so the first frames arrive fast
+  // on new devices instead of 192 parallel requests fighting for bandwidth.
+  // Unlocks after first batch (frames 1-24) OR 8 seconds — whichever first.
+  // Remaining frames load in background batches of 12.
   useEffect(() => {
     let loadedCount = 0;
     let unlocked = false;
-    const imgs: HTMLImageElement[] = [];
-    const EARLY_THRESHOLD = Math.ceil(TOTAL_FRAMES * 0.25);
+    let cancelled = false;
+    const imgs: HTMLImageElement[] = new Array(TOTAL_FRAMES);
+    const BATCH_SIZE = 12;
+    const FIRST_BATCH = 24; // load first 24 frames, then unlock
 
     const unlock = () => {
       if (unlocked) return;
@@ -84,30 +87,40 @@ export default function ScrollIntro() {
       finishLoading(imgs);
     };
 
-    // Hard timeout — if frames are slow (Instagram browser, slow connection),
-    // show the site after 10 seconds no matter what.
-    const timeout = setTimeout(unlock, 10000);
+    // Hard timeout — show the site after 8 seconds no matter what.
+    const timeout = setTimeout(unlock, 8000);
 
-    for (let i = 1; i <= TOTAL_FRAMES; i++) {
-      const img = new Image();
-      img.src = getFrameSrc(i);
-      const frameIdx = i - 1;
-      const onDone = () => {
-        if (img.naturalWidth) frameLoadedRef.current[frameIdx] = true;
-        loadedCount++;
-        setLoadProgress(loadedCount / TOTAL_FRAMES);
+    function loadBatch(startIdx: number) {
+      if (cancelled) return;
+      const end = Math.min(startIdx + BATCH_SIZE, TOTAL_FRAMES);
+      let batchRemaining = end - startIdx;
 
-        // Unlock once 25% is ready
-        if (loadedCount >= EARLY_THRESHOLD) {
-          unlock();
-        }
-      };
-      img.onload = onDone;
-      img.onerror = onDone;
-      imgs.push(img);
+      for (let i = startIdx; i < end; i++) {
+        const img = new Image();
+        const frameNum = i + 1;
+        img.src = getFrameSrc(frameNum);
+        imgs[i] = img;
+        const onDone = () => {
+          if (img.naturalWidth) frameLoadedRef.current[i] = true;
+          loadedCount++;
+          setLoadProgress(loadedCount / TOTAL_FRAMES);
+          if (loadedCount >= FIRST_BATCH) unlock();
+          batchRemaining--;
+          if (batchRemaining === 0 && end < TOTAL_FRAMES) {
+            loadBatch(end);
+          }
+        };
+        img.onload = onDone;
+        img.onerror = onDone;
+      }
     }
 
-    return () => clearTimeout(timeout);
+    loadBatch(0);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timeout);
+    };
   }, [finishLoading]);
 
   // Draw a frame to canvas using cover-fit on every viewport — image fills the
