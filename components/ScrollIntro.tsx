@@ -55,10 +55,10 @@ export default function ScrollIntro() {
   const ZOOM_MAX_SCALE = 3.5; // how far it zooms in
   const FADE_START = 0.85; // progress at which fade-out begins
 
-  // Remove the static HTML loader once React takes over (we show our own loader)
+  // Lock scroll while loading frames (only on home page where ScrollIntro lives)
   useEffect(() => {
-    const wrapper = document.getElementById("initial-loader-wrapper");
-    if (wrapper) wrapper.innerHTML = "";
+    document.documentElement.classList.add("loading-lock");
+    return () => { document.documentElement.classList.remove("loading-lock"); };
   }, []);
 
   // Unlock scroll and show the site
