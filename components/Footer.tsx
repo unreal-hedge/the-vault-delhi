@@ -62,8 +62,8 @@ export function Footer() {
                 Noida, Uttar Pradesh
               </p>
               <p>
-                <a href="https://wa.me/918796049859" className="text-gold hover:underline">
-                  +91 87960 49859
+                <a href="https://wa.me/918796137650" className="text-gold hover:underline">
+                  +91 87961 37650
                 </a>
               </p>
               <p>

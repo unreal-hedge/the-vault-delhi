@@ -81,10 +81,10 @@ export default function ContactPage() {
                 WhatsApp
               </h3>
               <a
-                href="https://wa.me/918796049859"
+                href="https://wa.me/918796137650"
                 className="mt-2 inline-block font-body text-gold hover:underline"
               >
-                +91 87960 49859
+                +91 87961 37650
               </a>
             </div>
             <div>

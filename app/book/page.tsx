@@ -250,10 +250,10 @@ export default function BookPage() {
             <p className="mt-1 font-body text-sm text-card-white/55">
               Call or WhatsApp us at{" "}
               <a
-                href="https://wa.me/918796049859"
+                href="https://wa.me/918796137650"
                 className="text-gold hover:underline"
               >
-                +91 87960 49859
+                +91 87961 37650
               </a>{" "}
               and we&apos;ll get you a seat right away.
             </p>
