@@ -3,6 +3,7 @@ import { getSupabaseAdmin } from "@/lib/supabase-admin";
 import { logoutAction } from "./actions";
 import { LiveUsersBadge } from "@/components/LiveUsersBadge";
 import { ExportSignupsButton } from "@/components/ExportSignupsButton";
+import { EditableRow, MobileDeleteButton } from "@/components/DashboardRowActions";
 import { Users, Eye, Calendar, TrendingUp, LogOut, Instagram, Phone, CalendarCheck, Handshake, Mail } from "lucide-react";
 
 // Never cache the dashboard — every reload should show fresh data.
@@ -36,20 +37,24 @@ type FranchiseInquiry = {
   created_at: string;
 };
 
+// IST = UTC+5:30. Vercel runs in UTC, so we must offset manually to get
+// correct "today" / "this week" / "this month" boundaries for Indian users.
 function startOf(period: "day" | "week" | "month"): string {
-  const d = new Date();
+  const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000;
+  const nowIST = new Date(Date.now() + IST_OFFSET_MS);
   if (period === "day") {
-    d.setHours(0, 0, 0, 0);
+    nowIST.setUTCHours(0, 0, 0, 0);
   } else if (period === "week") {
-    const day = d.getDay(); // 0 = Sun
+    const day = nowIST.getUTCDay(); // 0 = Sun
     const diff = (day + 6) % 7; // days since Monday
-    d.setDate(d.getDate() - diff);
-    d.setHours(0, 0, 0, 0);
+    nowIST.setUTCDate(nowIST.getUTCDate() - diff);
+    nowIST.setUTCHours(0, 0, 0, 0);
   } else {
-    d.setDate(1);
-    d.setHours(0, 0, 0, 0);
+    nowIST.setUTCDate(1);
+    nowIST.setUTCHours(0, 0, 0, 0);
   }
-  return d.toISOString();
+  // Convert back from IST midnight to UTC
+  return new Date(nowIST.getTime() - IST_OFFSET_MS).toISOString();
 }
 
 async function withTimeout<T>(promise: PromiseLike<T>, ms: number, fallback: T): Promise<T> {
@@ -303,26 +308,36 @@ async function DashboardContent() {
               <table className="hidden w-full md:table">
                 <thead className="border-b border-border bg-black/30">
                   <tr className="text-left">
-                    <Th>Date</Th>
-                    <Th>Slot</Th>
                     <Th>Name</Th>
                     <Th>Phone</Th>
-                    <Th className="text-right">Booked At</Th>
+                    <Th>Date</Th>
+                    <Th>Slot</Th>
+                    <Th className="text-right">Actions</Th>
                   </tr>
                 </thead>
                 <tbody>
                   {data.bookings.map((b) => (
-                    <tr key={b.id} className="border-b border-border/60 transition-colors last:border-b-0 hover:bg-black/20">
-                      <Td className="font-body text-sm font-medium text-gold">
-                        {new Date(b.slot_date + "T00:00:00").toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short" })}
-                      </Td>
-                      <Td className="font-mono text-sm text-card-white/85">{formatSlotLabel(b.slot_time)}</Td>
+                    <EditableRow
+                      key={b.id}
+                      table="bookings"
+                      id={b.id}
+                      fields={[
+                        { key: "name", label: "Name" },
+                        { key: "phone", label: "Phone", type: "tel" },
+                        { key: "slot_date", label: "Date (YYYY-MM-DD)" },
+                        { key: "slot_time", label: "Slot (HH:MM)" },
+                      ]}
+                      values={{ name: b.name, phone: b.phone, slot_date: b.slot_date, slot_time: b.slot_time }}
+                    >
                       <Td className="font-body text-sm font-medium text-card-white">{b.name}</Td>
                       <Td>
                         <a href={`tel:${b.phone}`} className="font-mono text-sm text-card-white/85 hover:text-gold">{b.phone}</a>
                       </Td>
-                      <Td className="text-right font-body text-xs text-card-white/55">{formatDateTime(b.created_at)}</Td>
-                    </tr>
+                      <Td className="font-body text-sm font-medium text-gold">
+                        {new Date(b.slot_date + "T00:00:00").toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short" })}
+                      </Td>
+                      <Td className="font-mono text-sm text-card-white/85">{formatSlotLabel(b.slot_time)}</Td>
+                    </EditableRow>
                   ))}
                 </tbody>
               </table>
@@ -340,6 +355,7 @@ async function DashboardContent() {
                         <a href={`tel:${b.phone}`} className="mt-1 flex items-center gap-1.5 font-mono text-xs text-card-white/75">
                           <Phone className="h-3 w-3" />{b.phone}
                         </a>
+                        <MobileDeleteButton table="bookings" id={b.id} />
                       </div>
                       <p className="shrink-0 font-body text-[11px] uppercase tracking-wider text-card-white/40">{formatDateTime(b.created_at)}</p>
                     </div>
@@ -374,12 +390,24 @@ async function DashboardContent() {
                     <Th>Phone</Th>
                     <Th>City</Th>
                     <Th>Message</Th>
-                    <Th className="text-right">Received</Th>
+                    <Th className="text-right">Actions</Th>
                   </tr>
                 </thead>
                 <tbody>
                   {data.franchiseInquiries.map((f) => (
-                    <tr key={f.id} className="border-b border-border/60 transition-colors last:border-b-0 hover:bg-black/20">
+                    <EditableRow
+                      key={f.id}
+                      table="franchise_inquiries"
+                      id={f.id}
+                      fields={[
+                        { key: "name", label: "Name" },
+                        { key: "email", label: "Email", type: "email" },
+                        { key: "phone", label: "Phone", type: "tel" },
+                        { key: "city", label: "City" },
+                        { key: "message", label: "Message" },
+                      ]}
+                      values={{ name: f.name, email: f.email, phone: f.phone, city: f.city, message: f.message }}
+                    >
                       <Td className="font-body text-sm font-medium text-card-white">{f.name}</Td>
                       <Td>
                         <a href={`mailto:${f.email}`} className="font-body text-sm text-gold hover:underline">{f.email}</a>
@@ -391,8 +419,7 @@ async function DashboardContent() {
                       <Td className="max-w-xs font-body text-sm text-card-white/70">
                         <p className="line-clamp-2">{f.message}</p>
                       </Td>
-                      <Td className="text-right font-body text-xs text-card-white/55">{formatDateTime(f.created_at)}</Td>
-                    </tr>
+                    </EditableRow>
                   ))}
                 </tbody>
               </table>
@@ -411,6 +438,7 @@ async function DashboardContent() {
                         </a>
                         {f.city && <p className="mt-1 font-body text-xs text-card-white/50">{f.city}</p>}
                         <p className="mt-2 font-body text-xs text-card-white/60 line-clamp-3">{f.message}</p>
+                        <MobileDeleteButton table="franchise_inquiries" id={f.id} />
                       </div>
                       <p className="shrink-0 font-body text-[11px] uppercase tracking-wider text-card-white/40">{formatDateTime(f.created_at)}</p>
                     </div>
@@ -451,12 +479,22 @@ async function DashboardContent() {
                   <Th>Name</Th>
                   <Th>Phone</Th>
                   <Th>Instagram</Th>
-                  <Th className="text-right">Joined</Th>
+                  <Th className="text-right">Actions</Th>
                 </tr>
               </thead>
               <tbody>
                 {data.signups.map((s) => (
-                  <tr key={s.id} className="border-b border-border/60 transition-colors last:border-b-0 hover:bg-black/20">
+                  <EditableRow
+                    key={s.id}
+                    table="waitlist"
+                    id={s.id}
+                    fields={[
+                      { key: "name", label: "Name" },
+                      { key: "phone", label: "Phone", type: "tel" },
+                      { key: "instagram_handle", label: "Instagram" },
+                    ]}
+                    values={{ name: s.name, phone: s.phone, instagram_handle: s.instagram_handle }}
+                  >
                     <Td className="font-body text-sm font-medium text-card-white">{s.name || "—"}</Td>
                     <Td>
                       {s.phone ? (
@@ -474,8 +512,7 @@ async function DashboardContent() {
                         <span className="text-card-white/40">—</span>
                       )}
                     </Td>
-                    <Td className="text-right font-body text-xs text-card-white/55">{formatDateTime(s.created_at)}</Td>
-                  </tr>
+                  </EditableRow>
                 ))}
               </tbody>
             </table>
@@ -496,6 +533,7 @@ async function DashboardContent() {
                           <Instagram className="h-3 w-3" />@{s.instagram_handle.replace(/^@/, "")}
                         </a>
                       )}
+                      <MobileDeleteButton table="waitlist" id={s.id} />
                     </div>
                     <p className="shrink-0 font-body text-[11px] uppercase tracking-wider text-card-white/40">{formatDateTime(s.created_at)}</p>
                   </div>
