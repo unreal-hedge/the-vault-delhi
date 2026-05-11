@@ -3,7 +3,7 @@ import { getSupabaseAdmin } from "@/lib/supabase-admin";
 import { logoutAction } from "./actions";
 import { LiveUsersBadge } from "@/components/LiveUsersBadge";
 import { ExportSignupsButton } from "@/components/ExportSignupsButton";
-import { Users, Eye, Calendar, TrendingUp, LogOut, Instagram, Phone, CalendarCheck } from "lucide-react";
+import { Users, Eye, Calendar, TrendingUp, LogOut, Instagram, Phone, CalendarCheck, Handshake, Mail } from "lucide-react";
 
 // Never cache the dashboard — every reload should show fresh data.
 export const dynamic = "force-dynamic";
@@ -23,6 +23,16 @@ type Booking = {
   phone: string;
   slot_date: string;
   slot_time: string;
+  created_at: string;
+};
+
+type FranchiseInquiry = {
+  id: number | string;
+  name: string;
+  email: string;
+  phone: string;
+  city: string | null;
+  message: string;
   created_at: string;
 };
 
@@ -66,6 +76,8 @@ async function loadData() {
     visitsTotalRes,
     bookingsRes,
     totalBookingsRes,
+    franchiseRes,
+    totalFranchiseRes,
   ] = await Promise.all([
     withTimeout(
       db.from("waitlist").select("id, name, phone, instagram_handle, created_at").order("created_at", { ascending: false }).limit(200).then((r) => r),
@@ -99,6 +111,14 @@ async function loadData() {
       db.from("bookings").select("id", { count: "exact", head: true }).gte("slot_date", todayStr).then((r) => r),
       QUERY_TIMEOUT, emptyRes
     ),
+    withTimeout(
+      db.from("franchise_inquiries").select("id, name, email, phone, city, message, created_at").order("created_at", { ascending: false }).limit(200).then((r) => r),
+      QUERY_TIMEOUT, emptyRes
+    ),
+    withTimeout(
+      db.from("franchise_inquiries").select("id", { count: "exact", head: true }).then((r) => r),
+      QUERY_TIMEOUT, emptyRes
+    ),
   ]);
 
   return {
@@ -114,6 +134,10 @@ async function loadData() {
     bookingsError: bookingsRes.error?.message ?? null,
     totalUpcoming: totalBookingsRes.count ?? 0,
     bookingsMissing: bookingsRes.error?.message?.includes("bookings") ?? false,
+    franchiseInquiries: (franchiseRes.data ?? []) as FranchiseInquiry[],
+    franchiseError: franchiseRes.error?.message ?? null,
+    totalFranchise: totalFranchiseRes.count ?? 0,
+    franchiseMissing: franchiseRes.error?.message?.includes("franchise_inquiries") ?? false,
   };
 }
 
@@ -184,8 +208,8 @@ export default function DashboardPage() {
 function DashboardSkeleton() {
   return (
     <>
-      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-        {Array.from({ length: 5 }).map((_, i) => (
+      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+        {Array.from({ length: 6 }).map((_, i) => (
           <div key={i} className="animate-pulse rounded-md border border-border bg-smoke/60 p-5">
             <div className="h-3 w-24 rounded bg-card-white/10" />
             <div className="mt-4 h-10 w-16 rounded bg-card-white/10" />
@@ -242,8 +266,9 @@ async function DashboardContent() {
         </div>
       )}
 
-      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         <StatCard icon={<CalendarCheck className="h-5 w-5" />} label="Upcoming Bookings" value={data.totalUpcoming.toLocaleString("en-IN")} sub="Seats reserved" />
+        <StatCard icon={<Handshake className="h-5 w-5" />} label="Franchise Enquiries" value={data.totalFranchise.toLocaleString("en-IN")} sub="Total enquiries" />
         <StatCard icon={<Users className="h-5 w-5" />} label="Total Signups" value={data.totalSignups.toLocaleString("en-IN")} sub="Waitlist + invites" />
         <StatCard icon={<Eye className="h-5 w-5" />} label="Visits Today" value={data.visitsToday.toLocaleString("en-IN")} sub={`${data.visitsWeek.toLocaleString("en-IN")} this week`} />
         <StatCard icon={<Calendar className="h-5 w-5" />} label="Visits This Month" value={data.visitsMonth.toLocaleString("en-IN")} sub={`${data.visitsTotal.toLocaleString("en-IN")} all-time`} />
@@ -317,6 +342,77 @@ async function DashboardContent() {
                         </a>
                       </div>
                       <p className="shrink-0 font-body text-[11px] uppercase tracking-wider text-card-white/40">{formatDateTime(b.created_at)}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </section>
+      )}
+
+      {!data.franchiseMissing && (
+        <section className="mt-12">
+          <div className="mb-4">
+            <h2 className="font-display text-2xl text-card-white md:text-3xl">Franchise Enquiries</h2>
+            <p className="mt-1 font-body text-sm text-card-white/55">All franchise enquiries — newest first.</p>
+          </div>
+
+          {data.franchiseInquiries.length === 0 && (
+            <div className="rounded-md border border-border bg-smoke/60 px-6 py-12 text-center font-body text-sm text-card-white/55">
+              No franchise enquiries yet.
+            </div>
+          )}
+
+          {data.franchiseInquiries.length > 0 && (
+            <div className="overflow-hidden rounded-md border border-border bg-smoke/60">
+              <table className="hidden w-full md:table">
+                <thead className="border-b border-border bg-black/30">
+                  <tr className="text-left">
+                    <Th>Name</Th>
+                    <Th>Email</Th>
+                    <Th>Phone</Th>
+                    <Th>City</Th>
+                    <Th>Message</Th>
+                    <Th className="text-right">Received</Th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.franchiseInquiries.map((f) => (
+                    <tr key={f.id} className="border-b border-border/60 transition-colors last:border-b-0 hover:bg-black/20">
+                      <Td className="font-body text-sm font-medium text-card-white">{f.name}</Td>
+                      <Td>
+                        <a href={`mailto:${f.email}`} className="font-body text-sm text-gold hover:underline">{f.email}</a>
+                      </Td>
+                      <Td>
+                        <a href={`tel:${f.phone}`} className="font-mono text-sm text-card-white/85 hover:text-gold">{f.phone}</a>
+                      </Td>
+                      <Td className="font-body text-sm text-card-white/70">{f.city || "—"}</Td>
+                      <Td className="max-w-xs font-body text-sm text-card-white/70">
+                        <p className="line-clamp-2">{f.message}</p>
+                      </Td>
+                      <Td className="text-right font-body text-xs text-card-white/55">{formatDateTime(f.created_at)}</Td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+              <ul className="divide-y divide-border/60 md:hidden">
+                {data.franchiseInquiries.map((f) => (
+                  <li key={f.id} className="px-5 py-4">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="min-w-0">
+                        <p className="truncate font-body text-sm font-semibold text-card-white">{f.name}</p>
+                        <a href={`mailto:${f.email}`} className="mt-1 flex items-center gap-1.5 font-body text-xs text-gold">
+                          <Mail className="h-3 w-3" />{f.email}
+                        </a>
+                        <a href={`tel:${f.phone}`} className="mt-1 flex items-center gap-1.5 font-mono text-xs text-card-white/75">
+                          <Phone className="h-3 w-3" />{f.phone}
+                        </a>
+                        {f.city && <p className="mt-1 font-body text-xs text-card-white/50">{f.city}</p>}
+                        <p className="mt-2 font-body text-xs text-card-white/60 line-clamp-3">{f.message}</p>
+                      </div>
+                      <p className="shrink-0 font-body text-[11px] uppercase tracking-wider text-card-white/40">{formatDateTime(f.created_at)}</p>
                     </div>
                   </li>
                 ))}

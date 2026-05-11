@@ -1,6 +1,10 @@
+"use client";
+
+import { useState } from "react";
+import { supabase } from "@/lib/supabase";
 import { ScrollAnimation } from "@/components/ScrollAnimation";
 import Link from "next/link";
-import { Award, Handshake, Building2, LineChart } from "lucide-react";
+import { Award, Handshake, Building2, LineChart, CheckCircle, Loader2, X } from "lucide-react";
 
 const features = [
   {
@@ -26,6 +30,51 @@ const features = [
 ];
 
 export default function FranchisePage() {
+  const [showModal, setShowModal] = useState(false);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [city, setCity] = useState("");
+  const [message, setMessage] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+    setError(null);
+
+    const { error: insertErr } = await supabase.from("franchise_inquiries").insert([
+      {
+        name: name.trim(),
+        email: email.trim(),
+        phone: phone.trim(),
+        city: city.trim() || null,
+        message: message.trim(),
+      },
+    ]);
+
+    setSubmitting(false);
+
+    if (insertErr) {
+      setError("Something went wrong. Please try again.");
+    } else {
+      setSuccess(true);
+    }
+  };
+
+  const resetForm = () => {
+    setName("");
+    setEmail("");
+    setPhone("");
+    setCity("");
+    setMessage("");
+    setSuccess(false);
+    setError(null);
+    setShowModal(false);
+  };
+
   return (
     <div className="bg-black">
       <section className="relative -mt-14 min-h-[55vh] overflow-hidden bg-gradient-to-b from-deep-green via-black to-black pt-14">
@@ -96,12 +145,12 @@ export default function FranchisePage() {
               we&apos;ll arrange a private conversation.
             </p>
             <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-              <a
-                href="mailto:w.entertainment.vault@gmail.com?subject=Franchise%20Enquiry"
+              <button
+                onClick={() => setShowModal(true)}
                 className="inline-flex rounded-sm bg-gold px-8 py-3.5 font-body text-sm font-semibold uppercase tracking-widest text-black transition-colors hover:bg-gold-light"
               >
                 Franchise Enquiry
-              </a>
+              </button>
               <Link
                 href="/contact"
                 className="inline-flex rounded-sm border-2 border-gold/80 px-8 py-3.5 font-body text-sm font-semibold uppercase tracking-widest text-gold transition-colors hover:border-gold hover:bg-gold/10"
@@ -112,6 +161,139 @@ export default function FranchisePage() {
           </ScrollAnimation>
         </div>
       </section>
+
+      {/* Franchise Enquiry Modal */}
+      {showModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 px-4 backdrop-blur-sm">
+          <div className="relative w-full max-w-lg rounded-lg border border-border bg-smoke p-6 shadow-2xl md:p-8">
+            <button
+              onClick={resetForm}
+              className="absolute right-4 top-4 text-card-white/50 transition-colors hover:text-card-white"
+            >
+              <X className="h-5 w-5" />
+            </button>
+
+            {success ? (
+              <div className="py-8 text-center">
+                <CheckCircle className="mx-auto mb-4 h-16 w-16 text-gold" />
+                <h3 className="font-display text-2xl text-card-white">
+                  Enquiry Sent
+                </h3>
+                <p className="mt-3 font-body text-sm text-card-white/55">
+                  Thank you for your interest. We&apos;ll be in touch shortly.
+                </p>
+                <button
+                  onClick={resetForm}
+                  className="mt-6 inline-flex rounded-sm bg-gold px-6 py-3 font-body text-sm font-semibold uppercase tracking-widest text-black transition-colors hover:bg-gold-light"
+                >
+                  Close
+                </button>
+              </div>
+            ) : (
+              <>
+                <h3 className="font-display text-2xl text-card-white">
+                  Franchise Enquiry
+                </h3>
+                <p className="mt-2 font-body text-sm text-card-white/55">
+                  Tell us about yourself and we&apos;ll get back to you.
+                </p>
+
+                <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+                  <div>
+                    <label htmlFor="fq-name" className="mb-1 block font-body text-sm text-card-white/70">
+                      Full Name *
+                    </label>
+                    <input
+                      id="fq-name"
+                      type="text"
+                      required
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="w-full rounded-md border border-border bg-black/50 px-4 py-3 font-body text-card-white transition-colors focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold"
+                      placeholder="Your name"
+                    />
+                  </div>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div>
+                      <label htmlFor="fq-email" className="mb-1 block font-body text-sm text-card-white/70">
+                        Email *
+                      </label>
+                      <input
+                        id="fq-email"
+                        type="email"
+                        required
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="w-full rounded-md border border-border bg-black/50 px-4 py-3 font-body text-card-white transition-colors focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold"
+                        placeholder="you@example.com"
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="fq-phone" className="mb-1 block font-body text-sm text-card-white/70">
+                        Phone *
+                      </label>
+                      <input
+                        id="fq-phone"
+                        type="tel"
+                        required
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        className="w-full rounded-md border border-border bg-black/50 px-4 py-3 font-body text-card-white transition-colors focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold"
+                        placeholder="+91 98765 43210"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label htmlFor="fq-city" className="mb-1 block font-body text-sm text-card-white/70">
+                      City / Location
+                    </label>
+                    <input
+                      id="fq-city"
+                      type="text"
+                      value={city}
+                      onChange={(e) => setCity(e.target.value)}
+                      className="w-full rounded-md border border-border bg-black/50 px-4 py-3 font-body text-card-white transition-colors focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold"
+                      placeholder="Where you'd like to open"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="fq-message" className="mb-1 block font-body text-sm text-card-white/70">
+                      Message *
+                    </label>
+                    <textarea
+                      id="fq-message"
+                      required
+                      rows={4}
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      className="w-full resize-none rounded-md border border-border bg-black/50 px-4 py-3 font-body text-card-white transition-colors focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold"
+                      placeholder="Tell us about your interest, experience, and any questions..."
+                    />
+                  </div>
+
+                  {error && (
+                    <div className="rounded-md border border-red-500/40 bg-red-500/10 px-4 py-3 font-body text-sm text-red-300">
+                      {error}
+                    </div>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={submitting}
+                    className="flex w-full items-center justify-center rounded-md bg-gold py-4 font-body text-sm font-bold uppercase tracking-widest text-black transition-colors hover:bg-gold-light disabled:opacity-70"
+                  >
+                    {submitting ? (
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                    ) : (
+                      "Send Enquiry"
+                    )}
+                  </button>
+                </form>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
